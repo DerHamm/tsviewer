@@ -1,0 +1,8 @@
+{
+  "HOST": "127.0.0.1",
+  "PORT": 10011,
+  "USER": "serveradmin",
+  "PASS": "v3rys3cret!",
+  "SERVER_ID": 1,
+  "TEAMSPEAK_INSTALL_PATH": "/home/teamspeak3"
+}

@@ -1,0 +1,15 @@
+body {
+        font-family: var(--sl-font-sans);
+        align-items: center
+      }
+
+sl-card {
+    margin: auto;
+    width: 100%;
+}
+
+.center {
+  margin: auto;
+  width: 50%;
+   justify-content: center;
+}
