@@ -39,7 +39,7 @@ class User(BaseUser):
     def __init__(self, client_info: Clientinfo = None,
                  idle_time: str = None, name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> None:
         """
-        :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.clientinfo()``
+        :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
         """
         self.client_info = client_info
 
