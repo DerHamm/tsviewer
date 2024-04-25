@@ -1,7 +1,7 @@
 import ts3
 import random
 from tsviewer.ts_viewer_utils import MoverDecorator, TimeCounter
-from tsviewer.clientinfo import Clientinfo
+from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import load_configuration, authorize
 from tsviewer.user import User
 
@@ -11,6 +11,7 @@ class TsViewerClient(object):
     This class is essentially a wrapper around the `ts3`-API.
     It provides some extra methods and uses the configuration to acquire a connection to the Teamspeak Server.
     """
+
     def __init__(self, path_to_configuration='config/example_config.json') -> None:
         """
         Connects and authorizes against the configurated Teamspeak Server.
@@ -29,14 +30,14 @@ class TsViewerClient(object):
         # TODO: Remove this method
         pass
 
-    def get_client_info(self, clid: str) -> Clientinfo:
+    def get_client_info(self, clid: str) -> ClientInfo:
         """
         Return a representation of the Teamspeak `clientinfo` command. The `Clientinfo` type exists to make development
         more easy as the `ts3` library only returns a dict-representation of the issued command.
         :param clid: Client ID
         :return: A `Clientinfo` object containing detailed information about the client
         """
-        return Clientinfo(**self.connection.clientinfo(clid=clid)._parsed[0])
+        return ClientInfo(**self.connection.clientinfo(clid=clid)._parsed[0])
 
     """
     The following methods `keep_away`, `follow`, and `move_around` are all funny little utilities, that can be used
@@ -100,8 +101,8 @@ class TsViewerClient(object):
         """
         clients = self.connection.clientlist()
         return list(
-                map(lambda x: x['clid'],
-                    filter(lambda client: client['client_nickname'] != 'serveradmin', clients)))
+            map(lambda x: x['clid'],
+                filter(lambda client: client['client_nickname'] != 'serveradmin', clients)))
 
     # TODO: Provide a filter for that method
     def get_channel_id_list(self) -> list[str]:

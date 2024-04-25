@@ -1,7 +1,7 @@
 import typing
 from time import sleep
 from pathlib import Path
-from tsviewer.clientinfo import Clientinfo
+from tsviewer.clientinfo import ClientInfo
 from tsviewer.user import User
 
 
@@ -53,7 +53,7 @@ class Avatars(object):
         self.avatar_path = Path(teamspeak_install_path) / Avatars.RELATIVE_AVATAR_PATH
 
     # Add "/avatar_{client_base64HashClientUID}" to this path to get the avatar path
-    def get_avatar_path_from_client_info(self, client_info: Clientinfo) -> Path:
+    def get_avatar_path_from_client_info(self, client_info: ClientInfo) -> Path:
         return Path(self.avatar_path) / client_info.client_base64HashClientUID
 
     def get_avatar_path(self, user: User) -> Path:
