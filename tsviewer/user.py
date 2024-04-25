@@ -1,4 +1,4 @@
-from tsviewer.clientinfo import Clientinfo
+from tsviewer.clientinfo import ClientInfo
 from abc import ABC, abstractmethod
 
 
@@ -36,7 +36,7 @@ class User(BaseUser):
     """ User is a representation of a clients information for displaying purposes.
      You have to provide a ``Clientinfo`` object to instantiate it"""
 
-    def __init__(self, client_info: Clientinfo = None,
+    def __init__(self, client_info: ClientInfo = None,
                  idle_time: str = None, name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
@@ -66,6 +66,6 @@ class User(BaseUser):
         return self.client_info.client_base64HashClientUID
 
 
-def build_fake_user(idle_time: str = '~10 minutes', name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> BaseUser:
+def build_fake_user(idle_time: str = '~10 minutes', name: str = 'dev',
+                    avatar_file_name: str = 'unnamed.jpg') -> BaseUser:
     return FakeUser(idle_time=idle_time, name=name, avatar_file_name=avatar_file_name)
-

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 # Represents the information returned by the clientinfo command
 @dataclass
-class Clientinfo:
+class ClientInfo:
     cid: str
     client_idle_time: str
     client_unique_identifier: str
