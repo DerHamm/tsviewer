@@ -21,7 +21,7 @@ def load_configuration(path='config/example_config.json') -> Configuration:
 
 def save_configuration(configuration: Configuration, path='config/example_config.json') -> None:
     with resolve_with_project_path(path).open('w') as configuration_file:
-        return dump(configuration.__dict__, configuration_file)
+        dump(configuration.__dict__, configuration_file)
 
 
 def authorize(configuration: Configuration, connection: ts3.query.TS3Connection) -> None:

@@ -1,11 +1,43 @@
 from tsviewer.clientinfo import Clientinfo
+from abc import ABC, abstractmethod
 
 
-class User:
+class BaseUser(ABC):
+    @abstractmethod
+    def idle_time(self) -> str:
+        raise NotImplementedError('This is an Interface')
+
+    @abstractmethod
+    def name(self) -> str:
+        raise NotImplementedError('This is an Interface')
+
+    @abstractmethod
+    def avatar_file_name(self) -> str:
+        raise NotImplementedError('This is an Interface')
+
+
+class FakeUser(BaseUser):
+    def __init__(self, idle_time: str = None, name: str = None, avatar_file_name: str = None) -> None:
+        self.avatar_file_name = avatar_file_name
+        self.name = name
+        self.idle_time = idle_time
+
+    def idle_time(self) -> str:
+        pass
+
+    def name(self) -> str:
+        pass
+
+    def avatar_file_name(self) -> str:
+        pass
+
+
+class User(BaseUser):
     """ User is a representation of a clients information for displaying purposes.
      You have to provide a ``Clientinfo`` object to instantiate it"""
 
-    def __init__(self, client_info: Clientinfo) -> None:
+    def __init__(self, client_info: Clientinfo = None,
+                 idle_time: str = None, name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.clientinfo()``
         """
@@ -28,3 +60,12 @@ class User:
     @property
     def name(self) -> str:
         return self.client_info.client_nickname
+
+    @property
+    def avatar_file_name(self) -> str:
+        return self.client_info.client_base64HashClientUID
+
+
+def build_fake_user(idle_time: str = '~10 minutes', name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> BaseUser:
+    return FakeUser(idle_time=idle_time, name=name, avatar_file_name=avatar_file_name)
+

@@ -1,15 +1,49 @@
 body {
-        font-family: var(--sl-font-sans);
-        align-items: center
-      }
+  display: grid;
 
-sl-card {
+  /*height: 200px;*/
+  grid-template:
+    [header-left] "head head" 3.5em [header-right]
+    [main-left] "nav  main" 1fr [main-right]
+    / 120px 1fr;
+  font-family: var(--sl-font-sans);
+}
+
+.header {
+  grid-area: head;
+}
+.nav {
+  grid-area: nav;
+}
+
+.main {
+  grid-area: main;
+}
+
+.nav-bar-icon-button {
+    font-size: 3rem;
+}
+
+.content-centered {
     margin: auto;
-    width: 100%;
+    width: 50%;
+    display: block;
 }
 
-.center {
-  margin: auto;
-  width: 50%;
-   justify-content: center;
+.header-text {
+    margin: auto;
+    width: 60%;
+    display: block;
+    text-align: center;
 }
+
+.content-centered-sixty-percent-width {
+    margin: auto;
+    width: 60%;
+    display: block;
+}
+
+
+
+
+
