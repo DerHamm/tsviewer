@@ -24,15 +24,6 @@ class TimeCounter(object):
 class MoverDecorator(object):
     wait_delay = 1
 
-    # TODO: There must be a better way than using such an ugly decorator for polling data
-    @staticmethod
-    def do_update(func) -> typing.Callable:
-        def wrapped(*args, **kwargs) -> None:
-            func(*args, **kwargs)
-            args[0].update()
-
-        return wrapped
-
     @staticmethod
     def wait(func) -> typing.Callable:
         def wrapped(*args: list, **kwargs: dict) -> None:
