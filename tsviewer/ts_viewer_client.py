@@ -1,3 +1,5 @@
+import typing
+
 import ts3
 import random
 from tsviewer.ts_viewer_utils import MoverDecorator, TimeCounter
@@ -26,10 +28,6 @@ class TsViewerClient(object):
         self.image_tags = dict()
         self.muted_tags = dict()
 
-    def update(self) -> None:
-        # TODO: Remove this method
-        pass
-
     def get_client_info(self, clid: str) -> ClientInfo:
         """
         Return a representation of the Teamspeak `clientinfo` command. The `Clientinfo` type exists to make development
@@ -56,9 +54,7 @@ class TsViewerClient(object):
                 self.connection.clientmove(clid=client_id, cid=random.choice(self.channel_ids))
             except (ts3.TS3Error, Exception) as error:
                 print(f"Clientmove failed: {error}")
-        self.update()
 
-    @MoverDecorator.do_update
     def follow(self, follower_id: str, chased_id: str) -> None:
         """
         Let a client follow another client
@@ -68,7 +64,6 @@ class TsViewerClient(object):
         chased = self.get_client_info(chased_id)
         follower = self.get_client_info(follower_id)
         if chased.cid == follower.cid:
-            self.update()
             return None
         try:
             self.connection.clientmove(clid=follower_id, cid=int(chased.cid))
@@ -86,32 +81,33 @@ class TsViewerClient(object):
             except (ts3.TS3Error, Exception) as error:
                 print(f"Clientmove failed: {error}")
 
-    @MoverDecorator.do_update
     def move(self, clid: str, cid: str) -> None:
         """
         Wrapper around the `clientmove` method of `ts3`.
         """
         self.connection.clientmove(clid=clid, cid=cid)
 
-    # TODO: `serveradmin` is a variable name. Use the name from the configuration
     def get_client_id_list(self) -> list[str]:
         """
-        Get a list of all client IDs besides the `serveradmin` client
+        Get a list of all client IDs besides the Query user client
         :return: A list of all client IDs
         """
         clients = self.connection.clientlist()
         return list(
             map(lambda x: x['clid'],
-                filter(lambda client: client['client_nickname'] != 'serveradmin', clients)))
+                filter(lambda client: client['client_nickname'] != self.configuration.USER, clients)))
 
-    # TODO: Provide a filter for that method
-    def get_channel_id_list(self) -> list[str]:
+    def get_channel_id_list(self, filter_by: typing.Callable = None) -> list[str]:
         """
         Get a list of all channel IDs
+        :param filter_by: A callable that can filter out certain channel IDs
         :return: A list of all channel IDs
         """
         channels = self.connection.channellist()
-        self.channel_ids = list(map(lambda channel: channel['cid'], channels))
+        if filter_by is not None:
+            self.channel_ids = filter(channels, list(map(lambda channel: channel['cid'], channels)))
+        else:
+            self.channel_ids = list(map(lambda channel: channel['cid'], channels))
         return self.channel_ids
 
     def get_client_id_by_nickname(self, nickname: str) -> str:

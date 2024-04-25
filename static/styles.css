@@ -12,6 +12,7 @@ body {
 .header {
   grid-area: head;
 }
+
 .nav {
   grid-area: nav;
 }
@@ -37,11 +38,7 @@ body {
     text-align: center;
 }
 
-.content-centered-sixty-percent-width {
-    margin: auto;
-    width: 60%;
-    display: block;
-}
+
 
 
 
