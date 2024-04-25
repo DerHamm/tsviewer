@@ -24,7 +24,7 @@ This project aims to provide a web interface for interacting with a Teamspeak 3 
 
 ## Configuration
 
-1. Create a `config.json` file in the project root with the following structure:
+1. Create a `config.json` file in the project sub-folder `config` with the following structure:
 
     ```json
     {
@@ -36,8 +36,9 @@ This project aims to provide a web interface for interacting with a Teamspeak 3 
       "TEAMSPEAK_INSTALL_PATH": "/home/teamspeak3"
     }
     ```
-
+    
     Replace the placeholders with your Teamspeak server details and query credentials. By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
+    (Currently, the paramter `path_to_configuration` in `app.py` must be changed to point to the supplied config. A command line parameter will be added soon.)
 
 ## Usage
 
