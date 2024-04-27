@@ -4,13 +4,21 @@ from flask import Flask, render_template
 from tsviewer.avatars import Avatars
 from tsviewer.user import build_fake_user, User
 from tsviewer.ts_viewer_utils import get_application_name
+import os
+from tsviewer.configuration import load_configuration
 
 FLASK_APPLICATION_NAME = f'{get_application_name()}.app'
 
+
+def read_config_path_from_environment_variables(default_path: str = 'config/config.json') -> str:
+    return os.environ.get('TSVIEWER_CONFIGURATION_FILE', default_path)
+
+
 if __name__ in ['__main__', FLASK_APPLICATION_NAME]:
-    client = TsViewerClient(path_to_configuration='config/config.json')
+    client = TsViewerClient(load_configuration(read_config_path_from_environment_variables()))
     app = Flask(FLASK_APPLICATION_NAME, template_folder='template')
     avatars = Avatars(client.configuration.TEAMSPEAK_INSTALL_PATH)
+
 
     @app.route("/")
     def index():
