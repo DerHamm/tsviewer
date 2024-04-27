@@ -1,6 +1,29 @@
 import typing
 from time import sleep
 from pathlib import Path
+from os import environ
+from tsviewer.configuration import Configuration
+
+
+def read_environment_variables(configuration: Configuration) -> None:
+    """
+    Overwrite all configuration fields when there are configured environment variables for those fields.
+    The pattern for those variables is TSVIEWER_CONFIGURATION_FIELD_NAME. E.g.: TSVIEWER_CONFIGURATION_PASSWORD
+    :param configuration: configuration object
+    """
+    for name in configuration.__dict__.keys():
+        value = environ.get(f'TSVIEWER_CONFIGURATION_{name.upper()}')
+        if value:
+            configuration.__setattr__(name, value)
+
+
+def read_config_path_from_environment_variables(default_path: str = 'config/config.json') -> str:
+    """
+    Read the file path from the environment variable TSVIEWER_CONFIGURATION_FILE if configured
+    :param default_path:
+    :return:
+    """
+    return environ.get('TSVIEWER_CONFIGURATION_FILE', default_path)
 
 
 # TODO: Revamp this concept
