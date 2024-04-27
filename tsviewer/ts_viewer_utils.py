@@ -33,30 +33,16 @@ class MoverDecorator(object):
         return wrapped
 
 
-class Avatars(object):
-    """
-    Provides paths to the Avatars of clients on the Teamspeak Server.
-    """
-    RELATIVE_AVATAR_PATH = 'files/virtualserver_1/internal'
-
-    # Provide the install path of teamspeak
-    def __init__(self, teamspeak_install_path: str) -> None:
-        self.avatar_path = Path(teamspeak_install_path) / Avatars.RELATIVE_AVATAR_PATH
-
-    # Add "/avatar_{client_base64HashClientUID}" to this path to get the avatar path
-    def get_avatar_path_from_client_info(self, client_info: ClientInfo) -> Path:
-        return Path(self.avatar_path) / client_info.client_base64HashClientUID
-
-    def get_avatar_path(self, user: User) -> Path:
-        return Path(self.avatar_path) / user.client_info.client_base64HashClientUID
-
-
 def get_project_base_path() -> Path:
     return Path('.')
 
 
 def resolve_with_project_path(path: str) -> Path:
     return (get_project_base_path() / path).resolve()
+
+
+def get_application_name() -> str:
+    return get_project_base_path().resolve().name
 
 
 def __generate_dataclass(name: str, source: dict[str, str]) -> str:
