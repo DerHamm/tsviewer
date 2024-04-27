@@ -28,17 +28,34 @@ This project aims to provide a web interface for interacting with a Teamspeak 3 
 
     ```json
     {
-      "HOST": "127.0.0.1",
-      "PORT": 10011,
-      "USER": "serveradmin",
-      "PASS": "v3rys3cret!",
-      "SERVER_ID": 1,
-      "TEAMSPEAK_INSTALL_PATH": "/home/teamspeak3"
+      "host": "127.0.0.1",
+      "port": 10011,
+      "user": "serveradmin",
+      "password": "v3rys3cret!",
+      "server_id": 1,
+      "teamspeak_install_path": "/home/teamspeak3"
     }
     ```
     
     Replace the placeholders with your Teamspeak server details and query credentials. By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
     The default configuration path is `config/config.json`. You can replace that path by setting the environment variable `TSVIEWER_CONFIGURATION_FILE=/path/to/your/config`.
+
+### Alternative: Environment variables
+
+You can also set environment variables for the configuration fields. If a configuration file is specified the environment variables for that configuration field will be overridden.
+The environment variables do have the same name as their corresponding fields in uppercase with an added prefix `TSVIEWER_CONFIGURATION_`. E.g.:
+
+```json
+{
+   "host": "127.0.0.1"
+}
+```
+
+expressed as a environment variable would become:
+
+```shell
+export TSVIEWER_CONFIGURATION_HOST=127.0.0.1
+```
 
 ## Usage
 
