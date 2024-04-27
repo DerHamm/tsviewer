@@ -38,7 +38,7 @@ This project aims to provide a web interface for interacting with a Teamspeak 3 
     ```
     
     Replace the placeholders with your Teamspeak server details and query credentials. By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
-    (Currently, the paramter `path_to_configuration` in `app.py` must be changed to point to the supplied config. A command line parameter will be added soon.)
+    The default configuration path is `config/config.json`. You can replace that path by setting the environment variable `TSVIEWER_CONFIGURATION_FILE=/path/to/your/config`.
 
 ## Usage
 

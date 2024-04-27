@@ -4,7 +4,7 @@ import ts3
 import random
 from tsviewer.ts_viewer_utils import MoverDecorator, TimeCounter
 from tsviewer.clientinfo import ClientInfo
-from tsviewer.configuration import load_configuration, authorize
+from tsviewer.configuration import authorize, Configuration
 from tsviewer.user import User
 
 
@@ -14,12 +14,12 @@ class TsViewerClient(object):
     It provides some extra methods and uses the configuration to acquire a connection to the Teamspeak Server.
     """
 
-    def __init__(self, path_to_configuration='config/example_config.json') -> None:
+    def __init__(self, configuration: Configuration = None) -> None:
         """
         Connects and authorizes against the configurated Teamspeak Server.
-        :param path_to_configuration: Path to the configuration file
+        :param configuration: Configuration File object
         """
-        self.configuration = load_configuration(path=path_to_configuration)
+        self.configuration = configuration
         self.connection = ts3.query.TS3Connection(self.configuration.HOST, self.configuration.PORT)
         authorize(self.configuration, self.connection)
 
@@ -30,7 +30,7 @@ class TsViewerClient(object):
 
     def get_client_info(self, clid: str) -> ClientInfo:
         """
-        Return a representation of the Teamspeak `clientinfo` command. The `Clientinfo` type exists to make development
+        Return a representation of the Teamspeak `clientinfo` command. The `ClientInfo` type exists to make development
         more easy as the `ts3` library only returns a dict-representation of the issued command.
         :param clid: Client ID
         :return: A `Clientinfo` object containing detailed information about the client

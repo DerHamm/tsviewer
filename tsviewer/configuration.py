@@ -17,7 +17,7 @@ class Configuration(object):
     TEAMSPEAK_INSTALL_PATH: str
 
 
-def load_configuration(path='config/example_config.json') -> Configuration:
+def load_configuration(path: str = 'config/config.json') -> Configuration:
     """
     Loads the `Configuration` object from the config-file
     :param path: Path to the configuration file
@@ -27,7 +27,7 @@ def load_configuration(path='config/example_config.json') -> Configuration:
         return Configuration(**load(configuration_file))
 
 
-def save_configuration(configuration: Configuration, path='config/example_config.json') -> None:
+def save_configuration(configuration: Configuration, path: str = 'config/config.json') -> None:
     """
     Saves a modified `Configuration` to the given path
     :param configuration: `Configuration` object
