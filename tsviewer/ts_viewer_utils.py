@@ -1,10 +1,9 @@
 import typing
 from time import sleep
 from pathlib import Path
-from tsviewer.clientinfo import ClientInfo
-from tsviewer.user import User
 
 
+# TODO: Revamp this concept
 class TimeCounter(object):
     secs = 0
     reset = 10
@@ -20,6 +19,7 @@ class TimeCounter(object):
         return result
 
 
+# TODO: Revamp this concept
 # We decorate some methods with 'do_update' or 'wait' for updating the data model and delaying some calls
 class MoverDecorator(object):
     wait_delay = 1
@@ -33,33 +33,39 @@ class MoverDecorator(object):
         return wrapped
 
 
-class Avatars(object):
-    """
-    Provides paths to the Avatars of clients on the Teamspeak Server.
-    """
-    RELATIVE_AVATAR_PATH = 'files/virtualserver_1/internal'
-
-    # Provide the install path of teamspeak
-    def __init__(self, teamspeak_install_path: str) -> None:
-        self.avatar_path = Path(teamspeak_install_path) / Avatars.RELATIVE_AVATAR_PATH
-
-    # Add "/avatar_{client_base64HashClientUID}" to this path to get the avatar path
-    def get_avatar_path_from_client_info(self, client_info: ClientInfo) -> Path:
-        return Path(self.avatar_path) / client_info.client_base64HashClientUID
-
-    def get_avatar_path(self, user: User) -> Path:
-        return Path(self.avatar_path) / user.client_info.client_base64HashClientUID
-
-
 def get_project_base_path() -> Path:
+    """
+    Return the projects base path
+    :return: Path object to the project base path
+    """
     return Path('.')
 
 
 def resolve_with_project_path(path: str) -> Path:
+    """
+    Resolve a given path to the project's base path
+    :param path: Path as string
+    :return: Path object to the resolved path
+    """
     return (get_project_base_path() / path).resolve()
 
 
+def get_application_name() -> str:
+    """
+    Get the application name
+    :return: A string representing the application's name
+    """
+    return get_project_base_path().resolve().name
+
+
 def __generate_dataclass(name: str, source: dict[str, str]) -> str:
+    """
+    Generate code for a dataclass like `Clientinfo` by a given dict.
+    The dict needed for this is returned by one of the `ts3.query.TS3Connection` commands
+    :param name: Name for the class
+    :param source: Source `dict` for the class
+    :return: The generated code as a string
+    """
     class_str = f'class {name}(object):\n'
     for key in source.keys():
         class_str += f'\t{key}: str\n'
