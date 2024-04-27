@@ -2,7 +2,7 @@ from pathlib import Path
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.user import User
 from shutil import copy2
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 
 
 class Avatars(object):
@@ -11,19 +11,32 @@ class Avatars(object):
     """
     RELATIVE_AVATAR_PATH = 'files/virtualserver_1/internal'
 
-    # Provide the install path of teamspeak
     def __init__(self, teamspeak_install_path: str) -> None:
+        """
+        :param teamspeak_install_path: The path to the local Teamspeak installation
+        """
         self.avatar_path = Path(teamspeak_install_path) / Avatars.RELATIVE_AVATAR_PATH
 
     # Add "/avatar_{client_base64HashClientUID}" to this path to get the avatar path
     def get_avatar_path_from_client_info(self, client_info: ClientInfo) -> Path:
+        """
+        :param client_info: Clientinfo object of the client the avatar path is needed for
+        :return: Path object to the avatar path
+        """
         return Path(self.avatar_path) / client_info.client_base64HashClientUID
 
     def get_avatar_path(self, user: User) -> Path:
+        """
+        :param user: User object of the client the avatar path is needed for
+        :return: Path object to the avatar path
+        """
         return Path(self.avatar_path) / user.client_info.client_base64HashClientUID
 
     def update_avatars(self, user_list: list[User]) -> None:
-        """ Check which users are online and update their avatar images inside `static/uploads` """
+        """
+        Check which users are online and update their avatar images inside `static/uploads`
+        :param: List of users that need an avatar update
+        """
         path_map: dict[str: str]
         path_map = {self.get_avatar_path(user): f'static/uploads/{user.avatar_file_name}' for user in user_list}
         for src_path, dest_path in path_map.items():
@@ -34,6 +47,3 @@ class Avatars(object):
             if abs((last_modified_dest - last_modified_src).total_seconds()) <= 10:
                 continue
             copy2(src_path, dest_path)
-
-
-
