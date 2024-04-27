@@ -17,7 +17,7 @@ def read_config_path_from_environment_variables(default_path: str = 'config/conf
 if __name__ in ['__main__', FLASK_APPLICATION_NAME]:
     client = TsViewerClient(load_configuration(read_config_path_from_environment_variables()))
     app = Flask(FLASK_APPLICATION_NAME, template_folder='template')
-    avatars = Avatars(client.configuration.TEAMSPEAK_INSTALL_PATH)
+    avatars = Avatars(client.configuration.teamspeak_install_path)
 
 
     @app.route("/")

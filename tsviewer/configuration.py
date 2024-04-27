@@ -9,12 +9,12 @@ class Configuration(object):
     """
     Represents the configuration file
     """
-    HOST: str
-    PORT: int
-    USER: str
-    PASS: str
-    SERVER_ID: int
-    TEAMSPEAK_INSTALL_PATH: str
+    host: str
+    port: int
+    user: str
+    password: str
+    server_id: int
+    teamspeak_install_path: str
 
 
 def load_configuration(path: str = 'config/config.json') -> Configuration:
@@ -42,5 +42,5 @@ def authorize(configuration: Configuration, connection: ts3.query.TS3Connection)
     :param configuration: `Configuration` object
     :param connection: A reference to the `ts3.query.TS3Connection` object
     """
-    connection.login(client_login_name=configuration.USER, client_login_password=configuration.PASS)
-    connection.use(sid=configuration.SERVER_ID)
+    connection.login(client_login_name=configuration.user, client_login_password=configuration.password)
+    connection.use(sid=configuration.server_id)
