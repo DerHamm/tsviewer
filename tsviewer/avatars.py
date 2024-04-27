@@ -1,7 +1,8 @@
 from pathlib import Path
 from tsviewer.clientinfo import ClientInfo
-from tsviewer.user import User, BaseUser
+from tsviewer.user import User
 from shutil import copy2
+from datetime import datetime, timezone, timedelta
 
 
 class Avatars(object):
@@ -23,9 +24,16 @@ class Avatars(object):
 
     def update_avatars(self, user_list: list[User]) -> None:
         """ Check which users are online and update their avatar images inside `static/uploads` """
+        path_map: dict[str: str]
         path_map = {self.get_avatar_path(user): f'static/uploads/{user.avatar_file_name}' for user in user_list}
-        # TODO: We can use an exist check and a timestamp check, so that we really only update the necessary avatars
         for src_path, dest_path in path_map.items():
+            # Get the last modified timestamp of both avatar files
+            last_modified_src = datetime.fromtimestamp(Path(src_path).stat().st_mtime, tz=timezone.utc)
+            last_modified_dest = datetime.fromtimestamp(Path(dest_path).stat().st_mtime, tz=timezone.utc)
+            # Check if more than seconds difference exists in between these timestamps, skip the copy if not
+            if abs((last_modified_dest - last_modified_src).total_seconds()) <= 10:
+                continue
             copy2(src_path, dest_path)
+
 
 
