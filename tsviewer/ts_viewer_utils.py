@@ -1,36 +1,9 @@
-import typing
-from time import sleep
 from pathlib import Path
 
-
-# TODO: Revamp this concept
-class TimeCounter(object):
-    secs = 0
-    reset = 10
-
-    # Count up the counter and reset it when it hits the max. Return True, if the counter was reset
-    def add(self) -> int:
-        sleep(1)
-        result = self.secs == self.reset
-        if self.secs == self.reset:
-            self.secs += 1
-        else:
-            self.secs = 0
-        return result
-
-
-# TODO: Revamp this concept
-# We decorate some methods with 'do_update' or 'wait' for updating the data model and delaying some calls
-class MoverDecorator(object):
-    wait_delay = 1
-
-    @staticmethod
-    def wait(func) -> typing.Callable:
-        def wrapped(*args: list, **kwargs: dict) -> None:
-            func(*args, **kwargs)
-            sleep(MoverDecorator.wait_delay)
-
-        return wrapped
+CLIENT_ID = 'clid'
+CHANNEL_ID = 'cid'
+CLIENT_NICKNAME = 'client_nickname'
+CHANNEL_NAME = 'channel_name'
 
 
 def get_project_base_path() -> Path:

@@ -2,10 +2,10 @@ import typing
 
 import ts3
 import random
-from tsviewer.ts_viewer_utils import MoverDecorator, TimeCounter
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
 from tsviewer.user import User
+from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME
 
 
 class TsViewerClient(object):
@@ -22,11 +22,8 @@ class TsViewerClient(object):
         self.configuration = configuration
         self.connection = ts3.query.TS3Connection(self.configuration.host, self.configuration.port)
         authorize(self.configuration, self.connection)
-
-        self.channel_ids = list()
-        self.counter = TimeCounter()
-        self.image_tags = dict()
-        self.muted_tags = dict()
+        # TODO: Update the channel ids at some point
+        self.channel_ids = self.get_channel_id_list()
 
     def get_client_info(self, clid: str) -> ClientInfo:
         """
@@ -52,26 +49,25 @@ class TsViewerClient(object):
         client_channel_id = self.get_client_info(clid=client_id).cid
         if channel_id == client_channel_id:
             try:
-                self.connection.clientmove(clid=client_id, cid=random.choice(self.channel_ids))
+                self.move(client_id, random.choice(self.channel_ids))
             except (ts3.TS3Error, Exception) as error:
                 print(f'Clientmove failed: {error}')
 
-    def follow(self, follower_id: str, chased_id: str) -> None:
+    def follow(self, follower_client_id: str, chased_client_id: str) -> None:
         """
         Let a client follow another client
-        :param follower_id: Client ID of the following client
-        :param chased_id: Client ID of the client being chased
+        :param follower_client_id: Client ID of the following client
+        :param chased_client_id: Client ID of the client being chased
         """
-        chased = self.get_client_info(chased_id)
-        follower = self.get_client_info(follower_id)
+        chased = self.get_client_info(chased_client_id)
+        follower = self.get_client_info(follower_client_id)
         if chased.cid == follower.cid:
             return None
         try:
-            self.connection.clientmove(clid=follower_id, cid=int(chased.cid))
+            self.move(follower_client_id, chased.cid)
         except (ts3.TS3Error, Exception) as error:
             print(f'Clientmove failed: {error}')
 
-    @MoverDecorator.wait
     def move_around(self) -> None:
         """
         Move all clients into random channels.
@@ -82,11 +78,11 @@ class TsViewerClient(object):
             except (ts3.TS3Error, Exception) as error:
                 print(f'Clientmove failed: {error}')
 
-    def move(self, clid: str, cid: str) -> None:
+    def move(self, client_id: str, channel_id: str) -> None:
         """
         Wrapper around the `clientmove` method of `ts3`.
         """
-        self.connection.clientmove(clid=clid, cid=cid)
+        self.connection.clientmove(clid=client_id, cid=channel_id)
 
     def get_client_id_list(self) -> list[str]:
         """
@@ -95,8 +91,8 @@ class TsViewerClient(object):
         """
         clients = self.connection.clientlist()
         return list(
-            map(lambda x: x['clid'],
-                filter(lambda client: client['client_nickname'] != self.configuration.user, clients)))
+            map(lambda client: client[CLIENT_ID],
+                filter(lambda client: client[CLIENT_NICKNAME] != self.configuration.user, clients)))
 
     def get_channel_id_list(self, filter_by: typing.Callable = None) -> list[str]:
         """
@@ -106,9 +102,9 @@ class TsViewerClient(object):
         """
         channels = self.connection.channellist()
         if filter_by is not None:
-            self.channel_ids = filter(channels, list(map(lambda channel: channel['cid'], channels)))
+            self.channel_ids = filter(channels, list(map(lambda channel: channel[CHANNEL_ID], channels)))
         else:
-            self.channel_ids = list(map(lambda channel: channel['cid'], channels))
+            self.channel_ids = list(map(lambda channel: channel[CHANNEL_ID], channels))
         return self.channel_ids
 
     def get_client_id_by_nickname(self, nickname: str) -> str:
@@ -118,8 +114,8 @@ class TsViewerClient(object):
         :return: The clients ID
         """
         clients = self.connection.clientlist()
-        searched_client = next(filter(lambda client: client['client_nickname'] == nickname, clients), dict())
-        return searched_client.get('clid', str())
+        searched_client = next(filter(lambda client: client[CLIENT_NICKNAME] == nickname, clients), dict())
+        return searched_client.get(CLIENT_ID, str())
 
     def get_channel_id_by_name(self, name: str) -> str:
         """
@@ -128,8 +124,8 @@ class TsViewerClient(object):
         :return: The channel ID
         """
         channels = self.connection.channellist()
-        searched_channel = next(filter(lambda channel: channel['channel_name'] == name, channels), dict())
-        return searched_channel.get('cid', str())
+        searched_channel = next(filter(lambda channel: channel[CHANNEL_NAME] == name, channels), dict())
+        return searched_channel.get(CHANNEL_ID, str())
 
     def get_user_list(self) -> list[User]:
         """
