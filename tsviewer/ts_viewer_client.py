@@ -31,10 +31,11 @@ class TsViewerClient(object):
     def get_client_info(self, clid: str) -> ClientInfo:
         """
         Return a representation of the Teamspeak `clientinfo` command. The `ClientInfo` type exists to make development
-        more easy as the `ts3` library only returns a dict-representation of the issued command.
+        easier as the `ts3` library only returns a dict-representation of the issued command.
         :param clid: Client ID
         :return: A `Clientinfo` object containing detailed information about the client
         """
+        # noinspection PyProtectedMember
         return ClientInfo(**self.connection.clientinfo(clid=clid)._parsed[0])
 
     """
@@ -53,7 +54,7 @@ class TsViewerClient(object):
             try:
                 self.connection.clientmove(clid=client_id, cid=random.choice(self.channel_ids))
             except (ts3.TS3Error, Exception) as error:
-                print(f"Clientmove failed: {error}")
+                print(f'Clientmove failed: {error}')
 
     def follow(self, follower_id: str, chased_id: str) -> None:
         """
@@ -68,7 +69,7 @@ class TsViewerClient(object):
         try:
             self.connection.clientmove(clid=follower_id, cid=int(chased.cid))
         except (ts3.TS3Error, Exception) as error:
-            print(f"Clientmove failed: {error}")
+            print(f'Clientmove failed: {error}')
 
     @MoverDecorator.wait
     def move_around(self) -> None:
@@ -79,7 +80,7 @@ class TsViewerClient(object):
             try:
                 self.move(client_id, random.choice(self.channel_ids))
             except (ts3.TS3Error, Exception) as error:
-                print(f"Clientmove failed: {error}")
+                print(f'Clientmove failed: {error}')
 
     def move(self, clid: str, cid: str) -> None:
         """
