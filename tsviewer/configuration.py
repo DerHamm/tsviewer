@@ -4,6 +4,8 @@ from json import load, dump
 import ts3.query
 from os import environ
 
+ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
+
 
 @dataclass
 class Configuration(object):
@@ -54,7 +56,7 @@ def read_environment_variables(configuration: Configuration) -> None:
     :param configuration: configuration object
     """
     for name in configuration.__dict__.keys():
-        value = environ.get(f'TSVIEWER_CONFIGURATION_{name.upper()}')
+        value = environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_{name.upper()}')
         if value:
             configuration.__setattr__(name, value)
 
@@ -65,4 +67,4 @@ def read_config_path_from_environment_variables(default_path: str = 'config/conf
     :param default_path:
     :return:
     """
-    return environ.get('TSVIEWER_CONFIGURATION_FILE', default_path)
+    return environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_FILE', default_path)

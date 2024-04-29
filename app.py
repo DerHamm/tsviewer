@@ -22,8 +22,9 @@ if __name__ in ['__main__', FLASK_APPLICATION_NAME]:
         users = [build_fake_user()] * 10
 
         if users and isinstance(users[0], User):
+            # noinspection PyTypeChecker
             avatars.update_avatars(users)
 
-        # mulitply users times 10 for testing purposes
+        # multiply users times 10 for testing purposes
         return render_template('index.html', users=users, avatars=avatars,
                                f=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']))
