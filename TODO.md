@@ -1,10 +1,5 @@
 # TODOs
 
-## Login
-- Use Flask session for logging in (There wont be a user, just a password)
-- Add Env-Var for Session Secret Key
-- Add Env-Var for TsViewer password (one for admin, one for everything else)
-
 ## File Uploads
 - Use a similar approach to `avatars.py` to make accessing files uploaded on your Teamspeak easier
 - Add a `cleanup`-utility, that moves all files found in different channels to the designated upload-channel

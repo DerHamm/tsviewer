@@ -11,10 +11,12 @@ body {
 
 .header {
   grid-area: head;
+  position: relative;
 }
 
 .nav {
   grid-area: nav;
+  position: absolute;
 }
 
 .main {

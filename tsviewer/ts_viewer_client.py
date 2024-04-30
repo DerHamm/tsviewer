@@ -20,7 +20,8 @@ class TsViewerClient(object):
         :param configuration: Configuration File object
         """
         self.configuration = configuration
-        self.connection = ts3.query.TS3Connection(self.configuration.host, self.configuration.port)
+        self.connection = ts3.query.TS3Connection(self.configuration.server_query_host,
+                                                  self.configuration.server_query_port)
         authorize(self.configuration, self.connection)
         # TODO: Update the channel ids at some point
         self.channel_ids = self.get_channel_id_list()
@@ -92,7 +93,7 @@ class TsViewerClient(object):
         clients = self.connection.clientlist()
         return list(
             map(lambda client: client[CLIENT_ID],
-                filter(lambda client: client[CLIENT_NICKNAME] != self.configuration.user, clients)))
+                filter(lambda client: client[CLIENT_NICKNAME] != self.configuration.server_query_user, clients)))
 
     def get_channel_id_list(self, filter_by: typing.Callable = None) -> list[str]:
         """
