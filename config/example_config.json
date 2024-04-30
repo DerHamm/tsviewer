@@ -1,8 +1,11 @@
 {
-  "HOST": "127.0.0.1",
-  "PORT": 10011,
-  "USER": "serveradmin",
-  "PASS": "v3rys3cret!",
-  "SERVER_ID": 1,
-  "TEAMSPEAK_INSTALL_PATH": "/home/teamspeak3"
+  "server_query_host": "127.0.0.1",
+  "server_query_port": 10011,
+  "server_query_user": "serveradmin",
+  "server_query_password": "v3rys3cret!",
+  "server_id": 1,
+  "teamspeak_install_path": "/home/teamspeak3",
+  "website_password": "s3cret",
+  "admin_password": "t3amsp3ak",
+  "cookie_secret_key": "c00kie_s3cr3t"
 }

@@ -37,11 +37,10 @@ class FakeUser(BaseUser):
 
 
 class User(BaseUser):
-    """ User is a representation of a clients information for displaying purposes.
-     You have to provide a ``Clientinfo`` object to instantiate it"""
+    """ User is a representation of a client's information for displaying purposes.
+     You have to provide a ``ClientInfo`` object to instantiate it"""
 
-    def __init__(self, client_info: ClientInfo = None,
-                 idle_time: str = None, name: str = 'dev', avatar_file_name: str = 'unnamed.jpg') -> None:
+    def __init__(self, client_info: ClientInfo = None) -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
         """

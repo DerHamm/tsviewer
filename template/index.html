@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script type="module"
             src="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/shoelace-autoloader.js"></script>
-    <
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@shoelace-style/shoelace@2.15.0/cdn/themes/dark.css"/>
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}"/>
     <title>TS-Viewer</title>
@@ -14,34 +13,34 @@
 </head>
 <body>
 
-<div class="header">
-    <h1 class="header-text">TS-Viewer</h1>
-</div>
-<div class="nav">
-    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-</div>
-
-<div class="main">
-    {% for user in users %}
-    <sl-card class="content-centered">
-        <div slot="header">
-            <p>{{user.name}}</p>
-        </div>
-        <div>
-            <p>AFK since {{user.idle_time}}</p>
-        </div>
-        <img slot="image" src="{{f()}}">
-        <!-- <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/> -->
-    </sl-card>
-    <div class="content-centered">
-        <sl-divider></sl-divider>
+    <div class="header">
+        <h1 class="header-text">TS-Viewer</h1>
     </div>
-    {% endfor %}
-</div>
+    <div class="nav">
+        <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+        <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+        <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+        <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+        <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+    </div>
+
+    <div class="main">
+        {% for user in users %}
+        <sl-card class="content-centered">
+            <div slot="header">
+                <p>{{user.name}}</p>
+            </div>
+            <div>
+                <p>AFK since {{user.idle_time}}</p>
+            </div>
+            <img slot="image" src="{{f()}}">
+            <!-- <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/> -->
+        </sl-card>
+        <div class="content-centered">
+            <sl-divider></sl-divider>
+        </div>
+        {% endfor %}
+    </div>
 
 </body>
 </html>
