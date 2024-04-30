@@ -1,30 +1,30 @@
 body {
-  display: grid;
+    display: grid;
 
-  /*height: 200px;*/
-  grid-template:
-    [header-left] "head head" 3.5em [header-right]
-    [main-left] "nav  main" 1fr [main-right]
-    / 120px 1fr;
-  font-family: var(--sl-font-sans);
+    grid-template:
+        [header-left] "head head" 3.5em [header-right]
+        [main-left] "nav  main" 1fr [main-right]
+        / 0px 1fr;
+    font-family: var(--sl-font-sans);
+    position: relative;
 }
 
 .header {
-  grid-area: head;
-  position: relative;
+    grid-area: head;
 }
 
 .nav {
-  grid-area: nav;
-  position: absolute;
+    grid-area: nav;
+    position: absolute;
 }
 
 .main {
-  grid-area: main;
+    grid-area: main;
 }
 
 .nav-bar-icon-button {
     font-size: 3rem;
+    display: block;
 }
 
 .content-centered {
@@ -39,10 +39,3 @@ body {
     display: block;
     text-align: center;
 }
-
-
-
-
-
-
-
