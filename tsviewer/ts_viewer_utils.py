@@ -28,7 +28,7 @@ def get_application_name() -> str:
     Get the application name
     :return: A string representing the application's name
     """
-    return get_project_base_path().resolve().name
+    return f'{get_project_base_path().resolve().name}.app'
 
 
 def __generate_dataclass(name: str, source: dict[str, str]) -> str:
