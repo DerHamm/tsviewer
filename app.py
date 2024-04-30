@@ -1,19 +1,23 @@
 import random
 from tsviewer.ts_viewer_client import TsViewerClient
-from flask import Flask, render_template
+from flask import Flask, render_template, g
 from tsviewer.avatars import Avatars
 from tsviewer.user import build_fake_user, User
 from tsviewer.ts_viewer_utils import get_application_name
 from tsviewer.configuration import load_configuration, read_config_path_from_environment_variables
+from flask_authorize import Authorize
 
-FLASK_APPLICATION_NAME = f'{get_application_name()}.app'
+
+def get_user():
+    return g.user
 
 
-if __name__ in ['__main__', FLASK_APPLICATION_NAME]:
+if __name__ in ['__main__', get_application_name()]:
     client = TsViewerClient(load_configuration(read_config_path_from_environment_variables()))
     # TODO: Add a configuration field for the port of the Flask server
-    app = Flask(FLASK_APPLICATION_NAME, template_folder='template')
+    app = Flask(get_application_name(), template_folder='template')
     avatars = Avatars(client.configuration.teamspeak_install_path)
+    auth = Authorize(app, current_user=get_user())
 
 
     @app.route("/")
