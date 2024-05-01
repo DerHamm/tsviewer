@@ -13,11 +13,14 @@
 </head>
 
 <body>
-    <form class="content-centered" action="/login" method="post">
-        <sl-input name="password" label="password" required>
-
-        </sl-input>
-        <sl-button type="submit" variant="primary">Submit</sl-button>
-    </form>
+    <div class="content-centered">
+        <div class="content-centered-vertical">
+            <form action="/login" method="post">
+                <sl-input name="password" label="Password" type="password" password-toggle required pill></sl-input>
+                <br>
+                <sl-button type="submit" variant="primary">Submit</sl-button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

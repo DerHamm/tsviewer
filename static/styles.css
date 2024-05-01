@@ -1,11 +1,13 @@
 body {
-    display: grid;
+    font-family: var(--sl-font-sans);
+}
 
+index-body {
+    display: grid;
     grid-template:
         [header-left] "head head" 3.5em [header-right]
         [main-left] "nav  main" 1fr [main-right]
         / 0px 1fr;
-    font-family: var(--sl-font-sans);
     position: relative;
 }
 
