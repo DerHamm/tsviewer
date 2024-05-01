@@ -8,9 +8,6 @@ from tsviewer.configuration import load_configuration, read_config_path_from_env
 from functools import wraps
 
 
-CLEAR_SESSION = True
-
-
 def check_password(func):
     @wraps(func)
     def decorated_function(*args, **kwargs):
@@ -20,7 +17,7 @@ def check_password(func):
         role = session.get('role')
         if role not in ['user', 'admin']:
             return redirect(url_for('login'))
-        return func(*args, is_admin=role == 'admin', **kwargs)
+        return func(*args, **kwargs)
 
     return decorated_function
 
@@ -30,31 +27,23 @@ if __name__ in ['__main__', get_application_name()]:
     # TODO: Add a configuration field for the port of the Flask server
     app = Flask(get_application_name(), template_folder='template')
     avatars = Avatars(client.configuration.teamspeak_install_path)
-
     app.secret_key = client.configuration.cookie_secret_key
 
     @app.route("/", methods=['GET', 'POST'])
     @check_password
-    def index(is_admin: bool = False):
-        if CLEAR_SESSION:
-            session.clear()
-
-        # users = client.get_user_list()
-        users = [build_fake_user()] * 10
-
-        if users and isinstance(users[0], User):
-            # noinspection PyTypeChecker
-            avatars.update_avatars(users)
+    def index():
+        users = [build_fake_user()] * 10  # client.get_user_list()
+        # avatars.update_avatars(users)
 
         # multiply users times 10 for testing purposes
         return render_template('index.html', users=users, avatars=avatars,
-                               f=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']),
-                               is_admin=is_admin)
+                               random_image=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']),
+                               is_admin=session.get('role') == 'admin')
 
     @app.route('/logout', methods=['POST'])
     def logout():
         session['role'] = None
-        return redirect('/login')
+        return redirect(url_for('login'))
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -65,7 +54,7 @@ if __name__ in ['__main__', get_application_name()]:
             role = {client.configuration.website_password: 'user',
                     client.configuration.admin_password: 'admin'}.get(password)
             session['role'] = role
-            print(role)
-
             return redirect(url_for('index'))
+        if session.get('role') is not None:
+            return render_template('index.html')
         return render_template('login.html')

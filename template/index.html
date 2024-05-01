@@ -15,9 +15,11 @@
        function logout() {
            $.ajax({
                type: 'POST',
-               url: "{{ url_for('logout') }}"
+               url: "{{ url_for('logout') }}",
+               success: function() {
+                    window.location = window.location.origin;
+               }
            });
-           location.reload();
        }
     </script>
 </head>
@@ -43,7 +45,7 @@
             <div>
                 <p>AFK since {{user.idle_time}}</p>
             </div>
-            <img slot="image" src="{{f()}}">
+            <img slot="image" src="{{random_image()}}">
             <!-- <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/> -->
         </sl-card>
         <div class="content-centered">
