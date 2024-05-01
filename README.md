@@ -28,7 +28,19 @@ protocol. The web application is built using Python with Flask as the web server
 
 Create a `config.json` file in the project sub-folder `config` with the following structure:
 
-https://github.com/DerHamm/tsviewer/blob/9ff63c3b73617342e2bea57d77cc3e5f44ea2cc2/config/example_config.json
+```json
+{
+  "server_query_host": "127.0.0.1",
+  "server_query_port": 10011,
+  "server_query_user": "serveradmin",
+  "server_query_password": "v3rys3cret!",
+  "server_id": 1,
+  "teamspeak_install_path": "/home/teamspeak3",
+  "website_password": "s3cret",
+  "admin_password": "t3amsp3ak",
+  "cookie_secret_key": "c00kie_s3cr3t"
+}
+```
 
 Replace the placeholders with your Teamspeak server details and query credentials. By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
 The default configuration path is `config/config.json`. You can replace that path by setting the environment variable `TSVIEWER_CONFIGURATION_FILE=/path/to/your/config`.
@@ -42,14 +54,14 @@ prefix `TSVIEWER_CONFIGURATION_`. E.g.:
 
 ```json
 {
-  "host": "127.0.0.1"
+  "server_query_host": "127.0.0.1"
 }
 ```
 
 expressed as an environment variable would become:
 
 ```shell
-export TSVIEWER_CONFIGURATION_HOST=127.0.0.1
+export TSVIEWER_CONFIGURATION_SERVER_QUERY_HOST=127.0.0.1
 ```
 
 ## Usage
