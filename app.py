@@ -8,7 +8,7 @@ from tsviewer.configuration import load_configuration, read_config_path_from_env
 from functools import wraps
 
 
-CLEAR_SESSION = False
+CLEAR_SESSION = True
 
 
 def check_password(func):
@@ -20,7 +20,7 @@ def check_password(func):
         role = session.get('role')
         if role not in ['user', 'admin']:
             return redirect(url_for('login'))
-        return func(*args, **kwargs)
+        return func(*args, is_admin=role == 'admin', **kwargs)
 
     return decorated_function
 
@@ -35,7 +35,7 @@ if __name__ in ['__main__', get_application_name()]:
 
     @app.route("/", methods=['GET', 'POST'])
     @check_password
-    def index():
+    def index(is_admin: bool = False):
         if CLEAR_SESSION:
             session.clear()
 
@@ -48,8 +48,13 @@ if __name__ in ['__main__', get_application_name()]:
 
         # multiply users times 10 for testing purposes
         return render_template('index.html', users=users, avatars=avatars,
-                               f=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']))
+                               f=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']),
+                               is_admin=is_admin)
 
+    @app.route('/logout', methods=['POST'])
+    def logout():
+        session['role'] = None
+        return redirect('/login')
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -60,6 +65,7 @@ if __name__ in ['__main__', get_application_name()]:
             role = {client.configuration.website_password: 'user',
                     client.configuration.admin_password: 'admin'}.get(password)
             session['role'] = role
+            print(role)
 
             return redirect(url_for('index'))
         return render_template('login.html')
