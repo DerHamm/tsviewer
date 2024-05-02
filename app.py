@@ -1,7 +1,7 @@
 import random
 import typing
 from uuid import uuid4
-from flask import Flask, render_template, session, redirect, url_for, request
+from flask import Flask, render_template, session, redirect, url_for, request, Response
 from functools import wraps
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.avatars import Avatars
@@ -10,6 +10,17 @@ from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenti
 from tsviewer.configuration import load_configuration, read_config_path_from_environment_variables
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 
+DISABLE_USER_PASSWORD = False
+DISABLE_ADMIN_PASSWORD = False
+
+
+def redirect_to_index() -> Response:
+    return redirect(url_for('index'))
+
+
+def redirect_to_login() -> Response:
+    return redirect(url_for('login'))
+
 
 def check_password(func) -> typing.Callable:
     @wraps(func)
@@ -17,15 +28,25 @@ def check_password(func) -> typing.Callable:
         """
         Check if the password supplied by `/login.html` is the user- or the admin password.
         """
+        if DISABLE_USER_PASSWORD or DISABLE_ADMIN_PASSWORD:
+            session['role'] = 'admin' if DISABLE_ADMIN_PASSWORD else 'user'
+            session['uid'] = str(uuid4())
         if not is_authenticated(session):
-            return redirect(url_for('login'))
+            return redirect_to_login()
         return func(*args, **kwargs)
+
     return decorated_function
 
 
 if __name__ in ['__main__', get_application_name()]:
-    client = TsViewerClient(load_configuration(read_config_path_from_environment_variables()))
+    configuration = load_configuration(read_config_path_from_environment_variables())
+    DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
+    DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
+
+    client = TsViewerClient(configuration=configuration)
+
     avatars = Avatars(client.configuration.teamspeak_install_path)
+
     # TODO: Add a configuration field for the port of the Flask server
     app = Flask(get_application_name(), template_folder='template')
     app.session_interface = TsViewerSecureCookieSessionInterface(client.configuration.cookie_signing_salt)
@@ -47,7 +68,7 @@ if __name__ in ['__main__', get_application_name()]:
     @app.route('/logout', methods=['POST'])
     def logout():
         session.clear()
-        return redirect(url_for('login'))
+        return redirect_to_login()
 
 
     @app.route('/login', methods=['GET', 'POST'])
@@ -60,7 +81,7 @@ if __name__ in ['__main__', get_application_name()]:
                     client.configuration.admin_password: 'admin'}.get(password)
             session['role'] = role
             session['uid'] = str(uuid4())
-            return redirect(url_for('index'))
+            return redirect_to_index()
         if is_authenticated(session):
-            return redirect(url_for('index'))
+            return redirect_to_index()
         return render_template('login.html')

@@ -18,7 +18,7 @@ class TsViewerSecureCookieSessionInterface(SecureCookieSessionInterface):
         """
         super().__init__(*args, **kwargs)
         if salt is None:
-            raise SaltNotSetException('Salt was not set, can\' instantiate TsViewerSecureCookieSessionInterface')
+            raise SaltNotSetException('Salt was not set, can\'t instantiate TsViewerSecureCookieSessionInterface')
         self.salt = salt
 
     @staticmethod
