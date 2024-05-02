@@ -17,7 +17,7 @@ def check_password(func) -> typing.Callable:
         """
         Check if the password supplied by `/login.html` is the user- or the admin password.
         """
-        if is_authenticated(session):
+        if not is_authenticated(session):
             return redirect(url_for('login'))
         return func(*args, **kwargs)
     return decorated_function
