@@ -39,7 +39,9 @@ Create a `config.json` file in the project sub-folder `config` with the followin
   "website_password": "s3cret",
   "admin_password": "t3amsp3ak",
   "cookie_secret_key": "c00kie_s3cr3t",
-  "cookie_signing_salt": "c00kie_s4lt"
+  "cookie_signing_salt": "c00kie_s4lt",
+  "disable_user_password_protection": false,
+  "disable_admin_password_protection": false
 }
 ```
 

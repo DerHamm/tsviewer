@@ -22,6 +22,12 @@ class Configuration(object):
     admin_password: str
     cookie_secret_key: str
     cookie_signing_salt: str
+    """
+    Those are dangerous settings, do not use them in production! Everyone accessing the website will obtain a
+    Session-Cookie that is authenticated as user or admin. If ever used in production, wipe all cookies on next 
+    """
+    disable_user_password_protection: bool
+    disable_admin_password_protection: bool
 
 
 def load_configuration(path: str = 'config/config.json') -> Configuration:
