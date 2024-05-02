@@ -38,7 +38,8 @@ Create a `config.json` file in the project sub-folder `config` with the followin
   "teamspeak_install_path": "/home/teamspeak3",
   "website_password": "s3cret",
   "admin_password": "t3amsp3ak",
-  "cookie_secret_key": "c00kie_s3cr3t"
+  "cookie_secret_key": "c00kie_s3cr3t",
+  "cookie_signing_salt": "c00kie_s4lt"
 }
 ```
 

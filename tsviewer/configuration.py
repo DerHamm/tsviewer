@@ -21,6 +21,7 @@ class Configuration(object):
     website_password: str
     admin_password: str
     cookie_secret_key: str
+    cookie_signing_salt: str
 
 
 def load_configuration(path: str = 'config/config.json') -> Configuration:
