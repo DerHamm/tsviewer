@@ -31,6 +31,33 @@ def get_application_name() -> str:
     return f'{get_project_base_path().resolve().name}.app'
 
 
+def is_admin(session: dict[str: str]) -> bool:
+    """
+    Checks if session contains the `admin` flag
+    :param session: Session Dictionary
+    :return: True if user is admin
+    """
+    return session.get('role') == 'admin'
+
+
+def is_user(session: dict[str: str]) -> bool:
+    """
+    Checks if session contains the `user` flag
+    :param session: Session Dictionary
+    :return: True if user is a user
+    """
+    return session.get('role') == 'user'
+
+
+def is_authenticated(session: dict[str: str]) -> bool:
+    """
+    Checks if session contains the `admin` or the `user` flag
+    :param session: Session Dictionary
+    :return: True if user is an admin or a user
+    """
+    return session.get('role') in ['user', 'admin']
+
+
 def __generate_dataclass(name: str, source: dict[str, str]) -> str:
     """
     Generate code for a dataclass like `Clientinfo` by a given dict.
