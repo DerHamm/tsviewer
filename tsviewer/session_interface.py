@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 from hashlib import sha512
 
 if TYPE_CHECKING:
+    # noinspection PyProtectedMember
     from hashlib import _Hash
 
 
@@ -27,4 +28,7 @@ class TsViewerSecureCookieSessionInterface(SecureCookieSessionInterface):
 
 
 class SaltNotSetException(BaseException):
+    """
+    Named exception that is raised when no salt is set for signing cookies
+    """
     pass

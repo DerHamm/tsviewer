@@ -11,6 +11,20 @@ ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
 class Configuration(object):
     """
     Represents the configuration file
+
+    Attributes:
+        server_query_host: The host used for the Teamspeak Server Query.
+        server_query_port: The port used for the Teamspeak Server Query .
+        server_query_user: The username of the Teamspeak Server Query user.
+        server_query_password: The password the Teamspeak Server Query user.
+        server_id: Teamspeak virtual server id. Usually only one virtual server with id=1 exists.
+        teamspeak_install_path: The path to the Teamspeak Server installation. Needed for avatars.
+        website_password: The user password for website read access.
+        admin_password: The admin password for the website.
+        cookie_secret_key: Key used for signing cookies.
+        cookie_signing_salt: Salt used for cookie signing.
+        disable_user_password_protection: Flag for disabling user password protection.
+        disable_admin_password_protection: Flag for disabling admin password protection.
     """
     server_query_host: str
     server_query_port: int
@@ -24,7 +38,7 @@ class Configuration(object):
     cookie_signing_salt: str
     """
     Those are dangerous settings, do not use them in production! Everyone accessing the website will obtain a
-    Session-Cookie that is authenticated as user or admin. If ever used in production, wipe all cookies on next 
+    Session-Cookie that is authenticated as user or admin. If ever used in production, wipe all cookies.
     """
     disable_user_password_protection: bool
     disable_admin_password_protection: bool
