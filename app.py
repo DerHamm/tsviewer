@@ -52,11 +52,11 @@ if __name__ in ['__main__', get_application_name()]:
     app.session_interface = TsViewerSecureCookieSessionInterface(client.configuration.cookie_signing_salt)
     app.secret_key = client.configuration.cookie_secret_key
 
-
     @app.route("/", methods=['GET', 'POST'])
     @check_password
     def index():
-        users = [build_fake_user()] * 10  # client.get_user_list()
+        users = [build_fake_user()] * 10
+        # users = client.get_user_list()
         # avatars.update_avatars(users)
 
         # multiply users times 10 for testing purposes

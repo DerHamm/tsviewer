@@ -2,7 +2,7 @@ body {
     font-family: var(--sl-font-sans);
 }
 
-index-body {
+.index-body {
     display: grid;
     grid-template:
         [header-left] "head head" 3.5em [header-right]
@@ -40,4 +40,8 @@ index-body {
     width: 60%;
     display: block;
     text-align: center;
+}
+
+.status-icon {
+    font-size: 1.5rem;
 }
