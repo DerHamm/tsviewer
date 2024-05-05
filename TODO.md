@@ -18,8 +18,5 @@
 ## Frontpage
 - Add the user's mic-/headphone status on their card
 
-## Virtual Server
-- The virtual server id is hardcoded in some paths. Parametrize it with the configured server id.
-
 ## Talk to designer
 - ~ Jun. 15 2024

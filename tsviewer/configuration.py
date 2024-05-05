@@ -44,14 +44,21 @@ class Configuration(object):
     disable_admin_password_protection: bool
 
 
+_CONFIGURATION = None
+
+
 def load_configuration(path: str = 'config/config.json') -> Configuration:
     """
-    Loads the `Configuration` object from the config-file
+    Loads the `Configuration` object from the config-file. If the configuration is already loaded, that instance is
+    returned instead.
     :param path: Path to the configuration file
     :return: A `Configuration` file object
     """
-    with resolve_with_project_path(path).open('r') as configuration_file:
-        return Configuration(**load(configuration_file))
+    global _CONFIGURATION
+    if _CONFIGURATION is None:
+        with resolve_with_project_path(path).open('r') as configuration_file:
+            _CONFIGURATION = Configuration(**load(configuration_file))
+    return _CONFIGURATION
 
 
 def save_configuration(configuration: Configuration, path: str = 'config/config.json') -> None:

@@ -1,18 +1,22 @@
+from pathlib import Path
+
 
 # Beware: This class ignores sub-folders within the channels
 class ChannelUploads(object):
-
-    RELATIVE_AVATAR_PATH = 'files/virtualserver_1/internal'
+    RELATIVE_CHANNEL_UPLOAD_PATH_TEMPLATE = 'files/virtualserver_{server_id}/internal'
 
     """
     This class provides an interface to all uploaded files on the connected Teamspeak server.
     """
-    def __init__(self, upload_channel_id: str) -> None:
+
+    def __init__(self, teamspeak_install_path: str, upload_channel_id: str, server_id: str = '1') -> None:
         """
         `ChannelUploads` requires a designated upload channel for it`s functionalities.
         :param upload_channel_id: ID of the designated upload channel.
         """
+        self.server_id = server_id
         self.upload_channel_id = upload_channel_id
+        self.avatar_path = Path(teamspeak_install_path) / self._get_relative_channel_upload_path()
 
     def clean_up(self) -> None:
         """
@@ -42,3 +46,5 @@ class ChannelUploads(object):
     def _move_files_to_upload_channel(self, files: list[str]) -> None:
         pass
 
+    def _get_relative_channel_upload_path(self) -> str:
+        return ChannelUploads.RELATIVE_CHANNEL_UPLOAD_PATH_TEMPLATE.format(server_id=self.server_id)

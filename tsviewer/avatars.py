@@ -9,13 +9,14 @@ class Avatars(object):
     """
     Provides paths to the Avatars of clients on the Teamspeak Server.
     """
-    RELATIVE_AVATAR_PATH = 'files/virtualserver_1/internal'
+    RELATIVE_AVATAR_PATH_TEMPLATE = 'files/virtualserver_{server_id}/internal'
 
-    def __init__(self, teamspeak_install_path: str) -> None:
+    def __init__(self, teamspeak_install_path: str, server_id: str = '1') -> None:
         """
         :param teamspeak_install_path: The path to the local Teamspeak installation
         """
-        self.avatar_path = Path(teamspeak_install_path) / Avatars.RELATIVE_AVATAR_PATH
+        self.server_id = server_id
+        self.avatar_path = Path(teamspeak_install_path) / self._get_relative_avatar_path()
 
     # Add "/avatar_{client_base64HashClientUID}" to this path to get the avatar path
     def get_avatar_path_from_client_info(self, client_info: ClientInfo) -> Path:
@@ -47,3 +48,6 @@ class Avatars(object):
             if abs((last_modified_dest - last_modified_src).total_seconds()) <= 10:
                 continue
             copy2(src_path, dest_path)
+
+    def _get_relative_avatar_path(self) -> str:
+        return Avatars.RELATIVE_AVATAR_PATH_TEMPLATE.format(server_id=self.server_id)
