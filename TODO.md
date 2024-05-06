@@ -17,13 +17,3 @@
 
 ## Talk to designer
 - ~ Jun. 15 2024
-
-## Testing
-
-### Configuration
-- The current implementation for the configuration is not feasible anymore, add some kind of singleton so that
-the `Configuration` class can be instantiated anywhere with the same configuration file / env vars
-- Remove all occurrences of the default path used for the configuration file (`config/config.json`)
-- The goal is to turn the `Configuration` class into a weak dependency for all the features that it is needed for, the
-server should still be able to start without a configuration (Means that features like
-custom cookie signing, avatars and file uploads should be disabled then)

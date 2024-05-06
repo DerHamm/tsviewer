@@ -4,8 +4,11 @@ from json import load, dump
 import ts3.query
 from os import environ
 
+_CONFIGURATION = None
+ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
 
-@dataclass
+
+@dataclass(repr=True)
 class Configuration(object):
     """
     Represents the configuration file
@@ -40,31 +43,44 @@ class Configuration(object):
     disable_user_password_protection: bool
     disable_admin_password_protection: bool
 
+    @staticmethod
+    def load() -> 'Configuration':
+        global _CONFIGURATION
+        if _CONFIGURATION is None:
+            _CONFIGURATION = load_configuration(_CONFIGURATION_PATH)
+        return _CONFIGURATION
 
-_CONFIGURATION = None
+
+def read_config_path_from_environment_variables(path: str = 'config/example_config.json') -> str:
+    """
+    Read the file path from the environment variable TSVIEWER_CONFIGURATION_FILE if configured
+    :param path: Path to the configuration file
+    :return: The value of the environment variable
+    """
+    return environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_FILE', path)
 
 
-def load_configuration(path: str = 'config/config.json') -> Configuration:
+_CONFIGURATION_PATH = read_config_path_from_environment_variables()
+
+
+def load_configuration(path: str) -> Configuration:
     """
     Loads the `Configuration` object from the config-file. If the configuration is already loaded, that instance is
     returned instead.
     :param path: Path to the configuration file
     :return: A `Configuration` file object
     """
-    global _CONFIGURATION
-    if _CONFIGURATION is None:
-        with resolve_with_project_path(path).open('r') as configuration_file:
-            _CONFIGURATION = Configuration(**load(configuration_file))
-    return _CONFIGURATION
+    with resolve_with_project_path(path).open('r') as configuration_file:
+        configuration = Configuration(**load(configuration_file))
+    return configuration
 
 
-def save_configuration(configuration: Configuration, path: str = 'config/config.json') -> None:
+def save_configuration(configuration: Configuration) -> None:
     """
     Saves a modified `Configuration` to the given path
     :param configuration: `Configuration` object
-    :param path: Path to the configuration file
     """
-    with resolve_with_project_path(path).open('w') as configuration_file:
+    with resolve_with_project_path(_CONFIGURATION_PATH).open('w') as configuration_file:
         dump(configuration.__dict__, configuration_file)
 
 
@@ -78,9 +94,6 @@ def authorize(configuration: Configuration, connection: ts3.query.TS3Connection)
     connection.use(sid=configuration.server_id)
 
 
-ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
-
-
 def read_environment_variables(configuration: Configuration) -> None:
     """
     Overwrite all configuration fields when there are configured environment variables for those fields.
@@ -91,12 +104,3 @@ def read_environment_variables(configuration: Configuration) -> None:
         value = environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_{name.upper()}')
         if value:
             configuration.__setattr__(name, value)
-
-
-def read_config_path_from_environment_variables(path: str = 'config/config.json') -> str:
-    """
-    Read the file path from the environment variable TSVIEWER_CONFIGURATION_FILE if configured
-    :param path: Path to the configuration file
-    :return: The value of the environment variable
-    """
-    return environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_FILE', path)
