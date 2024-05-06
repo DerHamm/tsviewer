@@ -1,72 +1,10 @@
 import copy
-
 from tsviewer.clientinfo import ClientInfo, fake_user_base_client_info
-from abc import ABC, abstractmethod
+import random
+import string
 
 
-class BaseUser(ABC):
-    """
-    Base user objects. This only exists for polymorphism between `User` and `FakeUser`
-    """
-
-    client_info: ClientInfo
-
-    @abstractmethod
-    def idle_time(self) -> str:
-        raise NotImplementedError('This is an Interface')
-
-    @abstractmethod
-    def name(self) -> str:
-        raise NotImplementedError('This is an Interface')
-
-    @abstractmethod
-    def avatar_file_name(self) -> str:
-        raise NotImplementedError('This is an Interface')
-
-    @abstractmethod
-    def microphone_status(self) -> str:
-        raise NotImplementedError('This is an Interface')
-
-    @abstractmethod
-    def sound_status(self) -> str:
-        raise NotImplementedError('This is an Interface')
-
-
-class FakeUser(BaseUser):
-    """ Faked users Object for displaying purposes """
-
-    def __init__(self, client_info: ClientInfo) -> None:
-        self.client_info = client_info
-        self._idle_time = None
-        self._microphone_status = None
-        self._sound_status = None
-        self._name = None
-        self._avatar_file_name = None
-        for key, value in client_info.__dict__.items():
-            self.__setattr__(key, value)
-
-    @property
-    def idle_time(self) -> str:
-        return self._idle_time
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    @property
-    def avatar_file_name(self) -> str:
-        return self._avatar_file_name
-
-    @property
-    def microphone_status(self) -> str:
-        return self._microphone_status
-
-    @property
-    def sound_status(self) -> str:
-        return self._sound_status
-
-
-class User(BaseUser):
+class User(object):
     """ User is a representation of a client's information for displaying purposes.
      You have to provide a ``ClientInfo`` object to instantiate it"""
 
@@ -170,8 +108,7 @@ class UserBuilder(object):
         self._client_info = client_info
         return self
 
-    # TODO: Use the original client info values in the `FakeUser` as well, otherwise this method doesn't make much sense
-    def build_as_fake_user(self) -> BaseUser:
+    def build_as_fake_user(self) -> User:
         fake_user_client_info = copy.copy(fake_user_base_client_info)
 
         fake_user_client_info.client_idle_time = self._idle_time
@@ -180,25 +117,17 @@ class UserBuilder(object):
         fake_user_client_info.client_nickname = self._name
         fake_user_client_info.client_base64HashClientUID = self._avatar_file_name
 
-        fake_user = FakeUser(fake_user_client_info)
+        return User(fake_user_client_info)
 
-        fake_user._idle_time = self._idle_time
-        fake_user._microphone_status = self._microphone_status
-        fake_user._sound_status = self._sound_status
-        fake_user._name = self._name
-        fake_user._avatar_file_name = self._avatar_file_name
-
-        return fake_user
-
-    def build(self) -> BaseUser:
+    def build(self) -> User:
         return User(self._client_info)
 
 
-def build_fake_user(idle_time: str = '~10 minutes',
-                    name: str = 'dev',
-                    avatar_file_name: str = 'unnamed.jpg',
-                    microphone_status: str = 'mic',
-                    sound_status: str = 'volume-mute') -> BaseUser:
+def build_fake_user(idle_time: str = 600 * 1000,
+                    name: str = None,
+                    avatar_file_name: str = None,
+                    microphone_status: str = None,
+                    sound_status: str = None) -> User:
     """
     Create a faked user for displaying purposes
     :param idle_time: Formatted idle time string
@@ -208,6 +137,17 @@ def build_fake_user(idle_time: str = '~10 minutes',
     :param microphone_status: Client's microphone output status
     :return: a faked user object
     """
+    if idle_time is None:
+        idle_time = random.randint(1000, 1000 * 60 * 60 * 60)
+    if name is None:
+        name = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(4, 26)))
+    if avatar_file_name is None:
+        avatar_file_name = 'unnamed.jpg'
+    if microphone_status is None:
+        microphone_status = str(random.randint(0, 1))
+    if sound_status is None:
+        sound_status = str(random.randint(0, 1))
+
     # If needed, create a copy of `fake_user_base_client_info' and modify it for your purposes
     # With this approach it won't be complicated to add property based testing later on
     return UserBuilder().idle_time(idle_time).name(name).avatar_file_name(avatar_file_name).sound_status(

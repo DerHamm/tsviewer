@@ -7,8 +7,8 @@ protocol. The web application is built using Python with Flask as the web server
 
 - **Display Information**: View details about clients connected to the Teamspeak server.
 - **Customizable Configuration**: Easily configure server credentials and other settings using a JSON file.
-- **Planned Features**: Future enhancements include adding authorization for the website and implementing user
-  interfaces to also issue Server Query commands.
+- **Planned Features**: Implementing user interfaces to also issue Server Query commands, a File-Upload manager and an
+easy-to-setup `Docker` image.
 
 ## Installation
 
