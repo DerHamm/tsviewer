@@ -7,7 +7,7 @@ from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.avatars import Avatars
 from tsviewer.user import build_fake_user
 from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
-from tsviewer.configuration import load_configuration, read_config_path_from_environment_variables
+from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 
 DISABLE_USER_PASSWORD = False
@@ -39,7 +39,7 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
-    configuration = load_configuration(read_config_path_from_environment_variables())
+    configuration = Configuration.load()
     DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
     DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
 

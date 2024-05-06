@@ -45,8 +45,10 @@ Create a `config.json` file in the project sub-folder `config` with the followin
 }
 ```
 
-Replace the placeholders with your Teamspeak server details and query credentials. By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
-The default configuration path is `config/config.json`. You can replace that path by setting the environment variable `TSVIEWER_CONFIGURATION_FILE=/path/to/your/config`.
+Replace the placeholders with your Teamspeak server details and query credentials.
+By default, the name for the Server Query user is `serveradmin` and the port is `10011`.
+The default configuration path points to `config/example_config.json`, which is just filled with example values.
+You can replace that path by setting the environment variable `TSVIEWER_CONFIGURATION_FILE=/path/to/your/config`.
 
 ### Alternative: Environment variables
 
