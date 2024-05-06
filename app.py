@@ -45,12 +45,12 @@ if __name__ in ['__main__', get_application_name()]:
 
     client = TsViewerClient(configuration=configuration)
 
-    avatars = Avatars(client.configuration.teamspeak_install_path)
+    avatars = Avatars(configuration.teamspeak_install_path, server_id=str(configuration.server_id))
 
     # TODO: Add a configuration field for the port of the Flask server
     app = Flask(get_application_name(), template_folder='template')
-    app.session_interface = TsViewerSecureCookieSessionInterface(client.configuration.cookie_signing_salt)
-    app.secret_key = client.configuration.cookie_secret_key
+    app.session_interface = TsViewerSecureCookieSessionInterface(configuration.cookie_signing_salt)
+    app.secret_key = configuration.cookie_secret_key
 
     @app.route("/", methods=['GET', 'POST'])
     @check_password

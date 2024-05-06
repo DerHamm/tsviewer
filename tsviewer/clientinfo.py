@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from pathlib import Path
+from json import load
 
 
 @dataclass
@@ -68,3 +70,9 @@ class ClientInfo:
     connection_bandwidth_received_last_minute_total: str
     connection_connected_time: str
     connection_client_ip: str
+
+
+fake_user_base_client_info: ClientInfo
+
+with Path('test/resources/clientinfo.json').open('r') as client_info_template:
+    fake_user_base_client_info = ClientInfo(**load(client_info_template))

@@ -4,27 +4,24 @@ from json import load, dump
 import ts3.query
 from os import environ
 
-ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
-
 
 @dataclass
 class Configuration(object):
     """
     Represents the configuration file
-
-    Attributes:
-        server_query_host: The host used for the Teamspeak Server Query.
-        server_query_port: The port used for the Teamspeak Server Query .
-        server_query_user: The username of the Teamspeak Server Query user.
-        server_query_password: The password the Teamspeak Server Query user.
-        server_id: Teamspeak virtual server id. Usually only one virtual server with id=1 exists.
-        teamspeak_install_path: The path to the Teamspeak Server installation. Needed for avatars.
-        website_password: The user password for website read access.
-        admin_password: The admin password for the website.
-        cookie_secret_key: Key used for signing cookies.
-        cookie_signing_salt: Salt used for cookie signing.
-        disable_user_password_protection: Flag for disabling user password protection.
-        disable_admin_password_protection: Flag for disabling admin password protection.
+    Attributes
+        server_query_host: The host used for the Teamspeak Server Query.\n
+        server_query_port: The port used for the Teamspeak Server Query.\n
+        server_query_user: The username of the Teamspeak Server Query user.\n
+        server_query_password: The password the Teamspeak Server Query user.\n
+        server_id: Teamspeak virtual server id. Usually only one virtual server with id=1 exists.\n
+        teamspeak_install_path: The path to the Teamspeak Server installation. Needed for avatars.\n
+        website_password: The user password for website read access.\n
+        admin_password: The admin password for the website.\n
+        cookie_secret_key: Key used for signing cookies.\n
+        cookie_signing_salt: Salt used for cookie signing.\n
+        disable_user_password_protection: Flag for disabling user password protection.\n
+        disable_admin_password_protection: Flag for disabling admin password protection.\n
     """
     server_query_host: str
     server_query_port: int
@@ -81,6 +78,9 @@ def authorize(configuration: Configuration, connection: ts3.query.TS3Connection)
     connection.use(sid=configuration.server_id)
 
 
+ENVIRONMENT_VARIABLE_PREFIX = 'TSVIEWER_CONFIGURATION'
+
+
 def read_environment_variables(configuration: Configuration) -> None:
     """
     Overwrite all configuration fields when there are configured environment variables for those fields.
@@ -93,10 +93,10 @@ def read_environment_variables(configuration: Configuration) -> None:
             configuration.__setattr__(name, value)
 
 
-def read_config_path_from_environment_variables(default_path: str = 'config/config.json') -> str:
+def read_config_path_from_environment_variables(path: str = 'config/config.json') -> str:
     """
     Read the file path from the environment variable TSVIEWER_CONFIGURATION_FILE if configured
-    :param default_path:
-    :return:
+    :param path: Path to the configuration file
+    :return: The value of the environment variable
     """
-    return environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_FILE', default_path)
+    return environ.get(f'{ENVIRONMENT_VARIABLE_PREFIX}_FILE', path)
