@@ -4,7 +4,7 @@ import ts3
 import random
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
-from tsviewer.user import User, BaseUser
+from tsviewer.user import User
 from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME
 
 
@@ -128,7 +128,7 @@ class TsViewerClient(object):
         searched_channel = next(filter(lambda channel: channel[CHANNEL_NAME] == name, channels), dict())
         return searched_channel.get(CHANNEL_ID, str())
 
-    def get_user_list(self) -> list[BaseUser]:
+    def get_user_list(self) -> list[User]:
         """
         Get a list of all users represented as the `User` object. This class is a Frontend-Representation of a client
         :return:

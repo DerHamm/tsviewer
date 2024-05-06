@@ -1,6 +1,6 @@
 from pathlib import Path
 from tsviewer.clientinfo import ClientInfo
-from tsviewer.user import BaseUser
+from tsviewer.user import User
 from shutil import copy2
 from datetime import datetime, timezone
 
@@ -26,14 +26,14 @@ class Avatars(object):
         """
         return Path(self.avatar_path) / client_info.client_base64HashClientUID
 
-    def get_avatar_path(self, user: BaseUser) -> Path:
+    def get_avatar_path(self, user: User) -> Path:
         """
         :param user: User object of the client the avatar path is needed for
         :return: Path object to the avatar path
         """
         return Path(self.avatar_path) / user.client_info.client_base64HashClientUID
 
-    def update_avatars(self, user_list: list[BaseUser]) -> None:
+    def update_avatars(self, user_list: list[User]) -> None:
         """
         Check which users are online and update their avatar images inside `static/uploads`
         :param: List of users that need an avatar update
