@@ -3,6 +3,8 @@ from tsviewer.clientinfo import ClientInfo, fake_user_base_client_info
 import random
 import string
 
+from tsviewer.ts_viewer_utils import TimeUtil
+
 
 class User(object):
     """ User is a representation of a client's information for displaying purposes.
@@ -21,16 +23,25 @@ class User(object):
         :return: Formatted Client AFK time
         """
         idle_time_in_seconds = int(self.client_info.client_idle_time) / 1000
+        milliseconds = int(self.client_info.client_idle_time)
         if idle_time_in_seconds <= 10:
             return '-'
         elif idle_time_in_seconds <= 60:
-            return f'{int(idle_time_in_seconds)} seconds'
+            seconds = TimeUtil.to_seconds(milliseconds)
+            plural = 's' if seconds > 1 else ''
+            return f'{seconds} second' + plural
         elif idle_time_in_seconds <= 3600:
-            return f'{int(idle_time_in_seconds / 60)} minutes'
+            minutes = TimeUtil.to_minutes(milliseconds)
+            plural = 's' if minutes > 1 else ''
+            return f'{minutes} minutes' + plural
         elif idle_time_in_seconds <= 86400:
-            return f'{int(idle_time_in_seconds) / 60 / 60} hours'
+            hours = TimeUtil.to_hours(milliseconds)
+            plural = 's' if hours > 1 else ''
+            return f'{hours} hour' + plural
         else:
-            return f'More than 24 hours'
+            days = TimeUtil.to_days(milliseconds)
+            plural = 's' if days > 1 else ''
+            return f'{days} day' + plural
 
     @property
     def name(self) -> str:
@@ -123,7 +134,7 @@ class UserBuilder(object):
         return User(self._client_info)
 
 
-def build_fake_user(idle_time: str = 600 * 1000,
+def build_fake_user(idle_time: str = None,
                     name: str = None,
                     avatar_file_name: str = None,
                     microphone_status: str = None,
@@ -138,7 +149,12 @@ def build_fake_user(idle_time: str = 600 * 1000,
     :return: a faked user object
     """
     if idle_time is None:
-        idle_time = random.randint(1000, 1000 * 60 * 60 * 60)
+        unit = random.choice([TimeUtil.from_seconds,
+                              TimeUtil.from_minutes,
+                              TimeUtil.from_hours,
+                              TimeUtil.from_days,
+                              lambda noop: noop])
+        idle_time = unit(random.randint(1, 25))
     if name is None:
         name = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(4, 26)))
     if avatar_file_name is None:
