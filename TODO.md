@@ -27,7 +27,3 @@ the `Configuration` class can be instantiated anywhere with the same configurati
 - The goal is to turn the `Configuration` class into a weak dependency for all the features that it is needed for, the
 server should still be able to start without a configuration (Means that features like
 custom cookie signing, avatars and file uploads should be disabled then)
-
-### Fake User
-- The current implementation of the `FakeUser` class needs a lot of changes for a new field to be introduced
-- This should be revised so that only minimal effort is needed to add a new field to the `BaseUser`/`FakeUser`/`User`-classes
