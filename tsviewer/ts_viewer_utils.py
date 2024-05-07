@@ -11,6 +11,7 @@ class TimeUtil(object):
     Utility class for converting between milliseconds and seconds, minutes, etc.
     Just uses `int` for rounding (like math.floor)
     """
+
     @staticmethod
     def to_seconds(milliseconds: int) -> int:
         """
@@ -82,9 +83,6 @@ class TimeUtil(object):
         :return: the milliseconds
         """
         return days * 24 * 60 * 60 * 1000
-
-
-
 
 
 def get_project_base_path() -> Path:

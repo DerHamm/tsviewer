@@ -44,7 +44,7 @@ class Configuration(object):
     disable_admin_password_protection: bool
 
     @staticmethod
-    def load() -> 'Configuration':
+    def get_instance() -> 'Configuration':
         global _CONFIGURATION
         if _CONFIGURATION is None:
             _CONFIGURATION = load_configuration(_CONFIGURATION_PATH)
