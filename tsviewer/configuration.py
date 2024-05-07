@@ -25,6 +25,7 @@ class Configuration(object):
         cookie_signing_salt: Salt used for cookie signing.\n
         disable_user_password_protection: Flag for disabling user password protection.\n
         disable_admin_password_protection: Flag for disabling admin password protection.\n
+        upload_channel_id: The channel id for the designated upload channel
     """
     server_query_host: str
     server_query_port: int
@@ -42,6 +43,7 @@ class Configuration(object):
     """
     disable_user_password_protection: bool
     disable_admin_password_protection: bool
+    upload_channel_id: str
 
     @staticmethod
     def get_instance() -> 'Configuration':

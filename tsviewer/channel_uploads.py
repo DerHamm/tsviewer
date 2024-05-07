@@ -1,22 +1,24 @@
-from pathlib import Path
-
 
 # Beware: This class ignores sub-folders within the channels
+import ts3
+
+from tsviewer.ts_viewer_client import TsViewerClient
+
+
 class ChannelUploads(object):
-    RELATIVE_CHANNEL_UPLOAD_PATH_TEMPLATE = 'files/virtualserver_{server_id}/internal'
 
     """
     This class provides an interface to all uploaded files on the connected Teamspeak server.
     """
 
-    def __init__(self, teamspeak_install_path: str, upload_channel_id: str, server_id: str = '1') -> None:
+    def __init__(self, upload_channel_id: str, client: 'TsViewerClient') -> None:
         """
         `ChannelUploads` requires a designated upload channel for it`s functionalities.
         :param upload_channel_id: ID of the designated upload channel.
         """
-        self.server_id = server_id
         self.upload_channel_id = upload_channel_id
-        self.avatar_path = Path(teamspeak_install_path) / self._get_relative_channel_upload_path()
+        self.client = client
+        self.all_files = self.get_files()
 
     def clean_up(self) -> None:
         """
@@ -30,21 +32,25 @@ class ChannelUploads(object):
         """
         pass
 
-    def get_files(self) -> list[str]:
+    def get_files(self) -> list[dict[str: str]]:
         """
-        Get a list of all absolute file paths
+        Get a list of all files
         :return: list of file paths
         """
-        pass
+        files = list()
+        for cid in self.client.get_channel_id_list():
+            try:
+                files.append(list(self.client.connection.ftgetfilelist(cid=cid, path='/')))
+            except ts3.query.TS3QueryError as exception:
+                # TODO: Log the exception, but don't print it
+                print(f'Error for channel id {cid}. Assuming channel is empty')
+        return files
 
     def _get_files_from_channel(self, channel_id: str) -> list[str]:
-        pass
+        return self.all_files.get()
 
     def _get_files_from_upload_channel(self) -> list[str]:
         return self._get_files_from_channel(self.upload_channel_id)
 
     def _move_files_to_upload_channel(self, files: list[str]) -> None:
         pass
-
-    def _get_relative_channel_upload_path(self) -> str:
-        return ChannelUploads.RELATIVE_CHANNEL_UPLOAD_PATH_TEMPLATE.format(server_id=self.server_id)

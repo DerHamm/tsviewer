@@ -9,6 +9,7 @@
   "admin_password": "t3amsp3ak",
   "cookie_secret_key": "c00kie_s3cr3t",
   "cookie_signing_salt": "c00kie_s4lt",
-  "disable_user_password_protection": false,
-  "disable_admin_password_protection": false
+  "disable_user_password_protection": true,
+  "disable_admin_password_protection": true,
+  "upload_channel_id": "1"
 }
