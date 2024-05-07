@@ -39,7 +39,7 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
-    configuration = Configuration.load()
+    configuration = Configuration.get_instance()
     DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
     DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
 
@@ -51,6 +51,7 @@ if __name__ in ['__main__', get_application_name()]:
     app = Flask(get_application_name(), template_folder='template')
     app.session_interface = TsViewerSecureCookieSessionInterface(configuration.cookie_signing_salt)
     app.secret_key = configuration.cookie_secret_key
+
 
     @app.route("/", methods=['GET', 'POST'])
     @check_password
@@ -75,10 +76,10 @@ if __name__ in ['__main__', get_application_name()]:
     def login():
         if request.method == 'POST':
             password = request.form.get('password', str())
-            if password not in [client.configuration.website_password, client.configuration.admin_password]:
+            if password not in [configuration.website_password, configuration.admin_password]:
                 return redirect(request.url)
-            role = {client.configuration.website_password: 'user',
-                    client.configuration.admin_password: 'admin'}.get(password)
+            role = {configuration.website_password: 'user',
+                    configuration.admin_password: 'admin'}.get(password)
             session['role'] = role
             session['uid'] = str(uuid4())
             return redirect_to_index()
