@@ -1,8 +1,13 @@
 import random
 import typing
 from uuid import uuid4
+
+import ts3
 from flask import Flask, render_template, session, redirect, url_for, request, Response
 from functools import wraps
+
+from tsviewer.channel_uploads import ChannelUploads
+from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.avatars import Avatars
 from tsviewer.user import build_fake_user
@@ -12,6 +17,14 @@ from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 
 DISABLE_USER_PASSWORD = False
 DISABLE_ADMIN_PASSWORD = False
+
+
+def get_user_list(ts_client: TsViewerClient) -> list[User]:
+    if ts_client.connection is None:
+        users = [build_fake_user() for _ in range(10)]
+    else:
+        users = ts_client.get_user_list()
+    return users
 
 
 def redirect_to_index() -> Response:
@@ -47,17 +60,26 @@ if __name__ in ['__main__', get_application_name()]:
 
     avatars = Avatars(configuration.teamspeak_install_path, server_id=str(configuration.server_id))
 
-    # TODO: Add a configuration field for the port of the Flask server
+    # TODO: Add a configuration field for the port of the Flask server (must be done with the flask command, so the port
+    # TODO: should probably be in the dockerfile
     app = Flask(get_application_name(), template_folder='template')
     app.session_interface = TsViewerSecureCookieSessionInterface(configuration.cookie_signing_salt)
     app.secret_key = configuration.cookie_secret_key
+
+    #uploads = ChannelUploads(configuration.upload_channel_id, client)
+    #files = uploads.get_files()
+    #x = list(map(lambda lst: {lst[0]['cid']: lst}, files))
+    #from pprint import pprint
+    #pprint(x)
+    #client.connection.ftrenamefile(cid='12',  tcid='11', oldname='/DEINFLEX.psd', newname='/Assignment_4.pdf',  tcpw='',
+    #                               cpw='')
+    #client.connection.ftrenamefile()
 
 
     @app.route("/", methods=['GET', 'POST'])
     @check_password
     def index():
-        users = [build_fake_user() for _ in range(10)]
-        # users = client.get_user_list()
+        users = get_user_list(client)
         # avatars.update_avatars(users)
 
         # multiply users times 10 for testing purposes

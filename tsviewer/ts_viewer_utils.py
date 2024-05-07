@@ -85,6 +85,16 @@ class TimeUtil(object):
         return days * 24 * 60 * 60 * 1000
 
 
+def display_error(message: str, exception: Exception = None) -> None:
+    """
+    Quit the application and display the supplied message and exception
+    :param message: The message to be displayed
+    :param exception: The exception to be displayed
+    """
+    line_break = '\n' if not message.endswith('\n') else ''
+    print(f'Exception is: {exception}' + f'{line_break}message\n')
+
+
 def get_project_base_path() -> Path:
     """
     Return the projects base path
