@@ -2,7 +2,6 @@ import random
 import typing
 from uuid import uuid4
 
-import ts3
 from flask import Flask, render_template, session, redirect, url_for, request, Response
 from functools import wraps
 
@@ -18,9 +17,11 @@ from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 DISABLE_USER_PASSWORD = False
 DISABLE_ADMIN_PASSWORD = False
 
+DEBUG = True
+
 
 def get_user_list(ts_client: TsViewerClient) -> list[User]:
-    if ts_client.connection is None:
+    if ts_client.connection is None or DEBUG:
         users = [build_fake_user() for _ in range(10)]
     else:
         users = ts_client.get_user_list()
@@ -52,6 +53,7 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
+
     configuration = Configuration.get_instance()
     DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
     DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
@@ -65,15 +67,6 @@ if __name__ in ['__main__', get_application_name()]:
     app = Flask(get_application_name(), template_folder='template')
     app.session_interface = TsViewerSecureCookieSessionInterface(configuration.cookie_signing_salt)
     app.secret_key = configuration.cookie_secret_key
-
-    #uploads = ChannelUploads(configuration.upload_channel_id, client)
-    #files = uploads.get_files()
-    #x = list(map(lambda lst: {lst[0]['cid']: lst}, files))
-    #from pprint import pprint
-    #pprint(x)
-    #client.connection.ftrenamefile(cid='12',  tcid='11', oldname='/DEINFLEX.psd', newname='/Assignment_4.pdf',  tcpw='',
-    #                               cpw='')
-    #client.connection.ftrenamefile()
 
 
     @app.route("/", methods=['GET', 'POST'])

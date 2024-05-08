@@ -15,6 +15,7 @@ class Configuration(object):
     Attributes
         server_query_host: The host used for the Teamspeak Server Query.\n
         server_query_port: The port used for the Teamspeak Server Query.\n
+        server_voice_port: The port teamspeak exposes for the voice connection. This is needed for channel uploads\n
         server_query_user: The username of the Teamspeak Server Query user.\n
         server_query_password: The password the Teamspeak Server Query user.\n
         server_id: Teamspeak virtual server id. Usually only one virtual server with id=1 exists.\n
@@ -29,6 +30,7 @@ class Configuration(object):
     """
     server_query_host: str
     server_query_port: int
+    server_voice_port: int
     server_query_user: str
     server_query_password: str
     server_id: int

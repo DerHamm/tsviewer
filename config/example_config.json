@@ -1,6 +1,7 @@
 {
   "server_query_host": "127.0.0.1",
   "server_query_port": 10011,
+  "server_voice_port": 9987,
   "server_query_user": "serveradmin",
   "server_query_password": "v3rys3cret!",
   "server_id": 1,

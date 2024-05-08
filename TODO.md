@@ -1,10 +1,6 @@
 # TODOs
 
 ## File Uploads
-- The commands FTRENAMEFILE and FTDELETEFILE could be sufficient for the implementation
-- Use a similar approach to `avatars.py` to make accessing files uploaded on your Teamspeak easier
-- Add a `cleanup`-utility, that moves all files found in different channels to the designated upload-channel
-- (NTH) Link all files from the designated upload-channel in the channel description
 - Display the contents of the upload-channel on a sub-site
 
 ## Docker Deployment

@@ -32,6 +32,7 @@ Create a `config.json` file in the project sub-folder `config` with the followin
 {
   "server_query_host": "127.0.0.1",
   "server_query_port": 10011,
+  "server_voice_port": 9987,
   "server_query_user": "serveradmin",
   "server_query_password": "v3rys3cret!",
   "server_id": 1,
@@ -40,8 +41,9 @@ Create a `config.json` file in the project sub-folder `config` with the followin
   "admin_password": "t3amsp3ak",
   "cookie_secret_key": "c00kie_s3cr3t",
   "cookie_signing_salt": "c00kie_s4lt",
-  "disable_user_password_protection": false,
-  "disable_admin_password_protection": false
+  "disable_user_password_protection": true,
+  "disable_admin_password_protection": true,
+  "upload_channel_id": "1"
 }
 ```
 
