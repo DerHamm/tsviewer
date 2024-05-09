@@ -3,20 +3,16 @@ import ts3
 
 from tsviewer.configuration import Configuration
 from tsviewer.ts_viewer_client import TsViewerClient
+from tsviewer.logger import get_logger
 from urllib.parse import quote
-
-
-def _format_url(host: str, port: str, server_uid: str, channel_id: str, file_name: str, size: str,
-                file_date_time: str) -> str:
-    url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time} '
-    channel_description_line_for_file = f'[URL={url}]{file_name}[/URL]'
-    return channel_description_line_for_file
+import random
 
 
 class ChannelUploads(object):
     """
     This class provides an interface to all uploaded files on the connected Teamspeak server.
     """
+    AVATAR_CHANNEL_ID = '0'
 
     def __init__(self, upload_channel_id: str, client: 'TsViewerClient') -> None:
         """
@@ -28,6 +24,7 @@ class ChannelUploads(object):
         self.files = None
         self.channel_to_file_map = dict()
         self.get_files()
+        self.logger = get_logger(__name__)
 
     def clean_up(self) -> None:
         """
@@ -43,8 +40,9 @@ class ChannelUploads(object):
                     self.move_file_to_upload_channel(cid, file_name)
                 except ts3.query.TS3QueryError as exception:
                     print(exception, f'Error while moving files to the upload channel')
+                    self.logger.error(exception)
                     quit(0)
-        # TODO: Channel description
+        self.update_upload_channel_description()
 
     def move_file_to_upload_channel(self, target_channel_id: str, file_name: str) -> None:
         """
@@ -61,14 +59,18 @@ class ChannelUploads(object):
         """
         Create a new description string for the upload channel that lists and links all files located in that channel
         """
-        # TODO: Remove this. Can we get it with a command or do we have to configure it?
-        SERVER_UID = '1311ly07mh76Y2IJbhpZL+iRQsY='
+        server_uid = self.client.connection.whoami()[0]['virtualserver_unique_identifier']
         upload_channel_files = self._get_files_from_upload_channel()
         configuration = Configuration.get_instance()
         tag_list = list()
         for file in upload_channel_files:
-            tag = _format_url(configuration.server_query_host, str(configuration.server_voice_port), SERVER_UID,
-                              self.upload_channel_id, file['name'], file['size'], file['datetime'])
+            tag = _format_url_as_link_in_channel_description(configuration.server_query_host,
+                                                             str(configuration.server_voice_port),
+                                                             server_uid,
+                                                             self.upload_channel_id,
+                                                             file['name'],
+                                                             file['size'],
+                                                             file['datetime'])
             tag_list.append(tag)
         self.client.connection.channeledit(cid=configuration.upload_channel_id,
                                            channel_description='\n\n'.join(tag_list))
@@ -88,8 +90,8 @@ class ChannelUploads(object):
                 for file_list in raw_files:
                     channel_to_file_map[cid].append(file_list)
             except ts3.query.TS3QueryError as exception:
-                # TODO: Log the exception, but don't print it
-                print(f'Error for channel id {cid}. Assuming channel is empty. Exception: {exception}')
+                print(f'Error for channel id {cid}. Assuming channel is empty')
+                self.logger.error(exception)
         self.files = files
         self.channel_to_file_map = channel_to_file_map
         return files
@@ -102,3 +104,23 @@ class ChannelUploads(object):
 
     def _move_files_to_upload_channel(self, files: list[str]) -> None:
         pass
+
+    def _download_avatars_to_static_folder(self) -> None:
+
+        raw_files = self.client.connection.ftgetfilelist(cid=ChannelUploads.AVATAR_CHANNEL_ID, path='/').parsed
+
+        for file in raw_files:
+            download_response = self.client.connection.ftinitdownload(clientftfid=random.randint(1, 64000),
+                                                                      name=f"/{file['name']}",
+                                                                      cid=ChannelUploads.AVATAR_CHANNEL_ID,
+                                                                      seekpos=0)
+            print(download_response.parsed)
+            # TODO: What now?
+
+
+def _format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str, file_name: str,
+                                               size: str,
+                                               file_date_time: str) -> str:
+    url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}' \
+          f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time} '
+    return f'[URL={url}]{file_name}[/URL]'

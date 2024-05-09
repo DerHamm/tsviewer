@@ -5,7 +5,6 @@ from uuid import uuid4
 from flask import Flask, render_template, session, redirect, url_for, request, Response
 from functools import wraps
 
-from tsviewer.channel_uploads import ChannelUploads
 from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.avatars import Avatars
@@ -13,11 +12,15 @@ from tsviewer.user import build_fake_user
 from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
+from tsviewer.logger import get_logger
 
-DISABLE_USER_PASSWORD = False
-DISABLE_ADMIN_PASSWORD = False
 
-DEBUG = True
+configuration = Configuration.get_instance()
+logger = get_logger(__name__)
+
+DEBUG = configuration.debug
+DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
+DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
 
 
 def get_user_list(ts_client: TsViewerClient) -> list[User]:
@@ -53,11 +56,6 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
-
-    configuration = Configuration.get_instance()
-    DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
-    DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
-
     client = TsViewerClient(configuration=configuration)
 
     avatars = Avatars(configuration.teamspeak_install_path, server_id=str(configuration.server_id))
