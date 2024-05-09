@@ -4,6 +4,7 @@ import ts3
 import random
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
+from tsviewer.logger import get_logger
 from tsviewer.user import User
 from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME, display_error
 
@@ -15,27 +16,26 @@ class TsViewerClient(object):
     """
 
     def __init__(self, configuration: Configuration = None) -> None:
-        print("hwy")
         """
         Connects and authorizes against the configurated Teamspeak Server.
         Exit the application if not connection could be build
         :param configuration: Configuration File object
         """
         self.configuration = configuration
+        self.logger = get_logger(__name__)
         try:
 
             self.connection = ts3.query.TS3Connection(self.configuration.server_query_host,
                                                       self.configuration.server_query_port)
-            print("whyyyyyyyyyy")
             authorize(self.configuration, self.connection)
             # TODO: Update the channel ids at some point
             self.channel_ids = self.get_channel_id_list()
 
         except (ts3.TS3Error, ConnectionRefusedError) as connection_error:
-            print("why is this happening?")
             message = f'Could not connect to host at: ' \
                       f'{configuration.server_query_host}:{configuration.server_query_port}\n'
             display_error(message, connection_error)
+            self.logger.error(message, connection_error)
             self.connection = None
 
     def get_client_info(self, clid: str) -> ClientInfo:

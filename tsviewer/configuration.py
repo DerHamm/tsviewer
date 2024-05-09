@@ -27,6 +27,8 @@ class Configuration(object):
         disable_user_password_protection: Flag for disabling user password protection.\n
         disable_admin_password_protection: Flag for disabling admin password protection.\n
         upload_channel_id: The channel id for the designated upload channel
+        debug: True if the application should run in debug mode
+        log_path: Path to the log file, if one should be created. If this is not set, logs will go to the console
     """
     server_query_host: str
     server_query_port: int
@@ -46,6 +48,8 @@ class Configuration(object):
     disable_user_password_protection: bool
     disable_admin_password_protection: bool
     upload_channel_id: str
+    debug: bool
+    log_path: str
 
     @staticmethod
     def get_instance() -> 'Configuration':

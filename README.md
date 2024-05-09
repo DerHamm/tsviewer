@@ -43,7 +43,9 @@ Create a `config.json` file in the project sub-folder `config` with the followin
   "cookie_signing_salt": "c00kie_s4lt",
   "disable_user_password_protection": true,
   "disable_admin_password_protection": true,
-  "upload_channel_id": "1"
+  "upload_channel_id": "1",
+  "debug": true,
+  "log_path": "log/tsviewer.log"
 }
 ```
 
