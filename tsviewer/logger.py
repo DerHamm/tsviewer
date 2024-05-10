@@ -35,4 +35,3 @@ def get_logger(name: str, to_file: str = 'log/tsviewer.log') -> logging.Logger:
     else:
         logging.basicConfig(stream=sys.stderr, encoding='utf-8', level=level)
     return logger
-
