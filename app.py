@@ -10,7 +10,6 @@ from functools import wraps
 from tsviewer.channel_uploads import ChannelUploads
 from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
-from tsviewer.avatars import Avatars
 from tsviewer.user import build_fake_user
 from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
 from tsviewer.configuration import Configuration
@@ -57,8 +56,12 @@ def check_password(func) -> typing.Callable:
 
 if __name__ in ['__main__', get_application_name()]:
     client = TsViewerClient(configuration=configuration)
-    avatars = Avatars(configuration.teamspeak_install_path, server_id=str(configuration.server_id))
 
+    if configuration.clean_up_upload_channel:
+        logger.info('clean_up_upload_channel is set to True. The cleanup process will now be executed.')
+        uploads = ChannelUploads(client)
+        uploads.clean_up()
+        uploads.download_avatars_to_static_folder()
     # TODO: Add a configuration field for the port of the Flask server (must be done with the flask command, so the port
     # TODO: should probably be in the dockerfile
 
