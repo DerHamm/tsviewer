@@ -16,12 +16,12 @@ class ChannelUploads(object):
     """
     AVATAR_CHANNEL_ID = '0'
 
-    def __init__(self, upload_channel_id: str, client: 'TsViewerClient') -> None:
+    def __init__(self, client: 'TsViewerClient') -> None:
         """
         `ChannelUploads` requires a designated upload channel for it`s functionalities.
         :param upload_channel_id: ID of the designated upload channel.
         """
-        self.upload_channel_id = upload_channel_id
+        self.upload_channel_id = Configuration.get_instance().upload_channel_id
         self.client = client
         self.files = None
         self.channel_to_file_map = dict()
@@ -31,35 +31,14 @@ class ChannelUploads(object):
         Moves all files that were uploaded to the server into the designated upload-channel
         """
         self.get_files()
-        for cid, files in self.channel_to_file_map.items():
-            if cid == self.upload_channel_id:
-                continue
-            for file in files:
-                file_name = file['name']
-                try:
-                    self.move_file_to_upload_channel(cid, file_name)
-                except ts3.query.TS3QueryError as exception:
-                    print(exception, f'Error while moving files to the upload channel')
-                    logger.error(exception)
-                    quit(0)
+        self._move_files_to_upload_channel()
         self.update_upload_channel_description()
-
-    def move_file_to_upload_channel(self, target_channel_id: str, file_name: str) -> None:
-        """
-        Move a single file to the configured upload channel.
-        :param target_channel_id: The channel id of the file to be moved
-        :param file_name: File name of the file to be moved
-        """
-        self.client.connection.ftrenamefile(cid=target_channel_id,
-                                            tcid=self.upload_channel_id,
-                                            oldname=f'/{file_name}', newname=f'/{file_name}',
-                                            tcpw='', cpw='')
 
     def update_upload_channel_description(self) -> None:
         """
         Create a new description string for the upload channel that lists and links all files located in that channel
         """
-        server_uid = self.client.connection.whoami()[0]['virtualserver_unique_identifier']
+        server_uid = self.client.who_am_i()[0]['virtualserver_unique_identifier']
         upload_channel_files = self._get_files_from_upload_channel()
         configuration = Configuration.get_instance()
         tag_list = list()
@@ -72,8 +51,7 @@ class ChannelUploads(object):
                                                              file['size'],
                                                              file['datetime'])
             tag_list.append(tag)
-        self.client.connection.channeledit(cid=configuration.upload_channel_id,
-                                           channel_description='\n\n'.join(tag_list))
+        self.client.edit_channel_description(configuration.upload_channel_id, '\n\n'.join(tag_list))
 
     def get_files(self) -> list[list[dict[str: str]]]:
         """
@@ -83,18 +61,33 @@ class ChannelUploads(object):
         files = list()
         channel_to_file_map = dict()
         for cid in self.client.get_channel_id_list():
-            try:
-                raw_files = self.client.connection.ftgetfilelist(cid=cid, path='/').parsed
-                files.append(raw_files)
-                channel_to_file_map[cid] = list()
-                for file_list in raw_files:
-                    channel_to_file_map[cid].append(file_list)
-            except ts3.query.TS3QueryError as exception:
-                print(f'Error for channel id {cid}. Assuming channel is empty')
-                logger.error(exception)
+            raw_files = self.client.get_file_list(cid)
+            if raw_files is not None:
+                raw_files = raw_files.parsed
+            else:
+                continue
+            files.append(raw_files)
+            channel_to_file_map[cid] = list()
+            for file_list in raw_files:
+                channel_to_file_map[cid].append(file_list)
+
         self.files = files
         self.channel_to_file_map = channel_to_file_map
         return files
+
+    def download_avatars_to_static_folder(self) -> None:
+        """
+        Downloads all avatars to the static folder
+        """
+        raw_files = self.client.get_file_list(ChannelUploads.AVATAR_CHANNEL_ID).parsed
+        downloaded_files = 0
+        for file in raw_files:
+            download_response = self.client.init_file_download(file['name'], ChannelUploads.AVATAR_CHANNEL_ID)
+            if file.get('name') == 'icons':
+                continue
+            downloaded_files += download_file(download_response, file['name']) is not None
+
+        logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
 
     def _get_files_from_channel(self, channel_id: str) -> list[str]:
         return self.channel_to_file_map.get(channel_id)
@@ -102,22 +95,12 @@ class ChannelUploads(object):
     def _get_files_from_upload_channel(self) -> list[dict[str: str]]:
         return self._get_files_from_channel(self.upload_channel_id)
 
-    def _move_files_to_upload_channel(self, files: list[str]) -> None:
-        pass
-
-    def _download_avatars_to_static_folder(self) -> None:
-        raw_files = self.client.connection.ftgetfilelist(cid=ChannelUploads.AVATAR_CHANNEL_ID, path='/').parsed
-        downloaded_files = 0
-        for file in raw_files:
-            download_response = self.client.connection.ftinitdownload(clientftfid=random.randint(1, 64000),
-                                                                      name=f"/{file['name']}",
-                                                                      cid=ChannelUploads.AVATAR_CHANNEL_ID,
-                                                                      seekpos=0)
-            if file.get('name') == 'icons':
+    def _move_files_to_upload_channel(self) -> None:
+        for cid, files in self.channel_to_file_map.items():
+            if cid == self.upload_channel_id:
                 continue
-            downloaded_files += download_file(download_response, file['name']) is not None
-
-        logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
+            for file in files:
+                self.client.move_file(cid, self.upload_channel_id, file['name'])
 
 
 def _format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str, file_name: str,

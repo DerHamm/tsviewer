@@ -27,6 +27,7 @@ class Configuration(object):
         disable_user_password_protection: Flag for disabling user password protection.\n
         disable_admin_password_protection: Flag for disabling admin password protection.\n
         upload_channel_id: The channel id for the designated upload channel
+        clean_up_upload_channel: True if the upload channel cleanup method should run on startup
         debug: True if the application should run in debug mode
         log_path: Path to the log file, if one should be created. If this is not set, logs will go to the console
     """
@@ -36,7 +37,6 @@ class Configuration(object):
     server_query_user: str
     server_query_password: str
     server_id: int
-    teamspeak_install_path: str
     website_password: str
     admin_password: str
     cookie_secret_key: str
@@ -48,6 +48,7 @@ class Configuration(object):
     disable_user_password_protection: bool
     disable_admin_password_protection: bool
     upload_channel_id: str
+    clean_up_upload_channel: bool
     debug: bool
     log_path: str
 

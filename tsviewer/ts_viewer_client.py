@@ -2,6 +2,7 @@ import typing
 
 import ts3
 import random
+
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
 from tsviewer.logger import logger
@@ -9,6 +10,7 @@ from tsviewer.user import User
 from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME, display_error
 
 
+# TODO: Error handling with msg=ok and statuscode check where needed
 class TsViewerClient(object):
     """
     This class is essentially a wrapper around the `ts3`-API.
@@ -148,3 +150,65 @@ class TsViewerClient(object):
         for client_id in self.get_client_id_list():
             users.append(User(self.get_client_info(client_id)))
         return users
+
+    def init_file_download(self, file_name: str, channel_id: str) -> ts3.query.TS3QueryResponse:
+        """
+        Initialize a file download and return the response
+        :param file_name: File name of the file to be downloaded
+        :param channel_id: The target channel id
+        :return: The response object
+        """
+        download_response = self.connection.ftinitdownload(clientftfid=random.randint(1, 64000),
+                                                           name=f"/{file_name}",
+                                                           cid=channel_id,
+                                                           seekpos=0)
+
+        return download_response
+
+    def get_file_list(self, channel_id: str) -> typing.Optional[ts3.query.TS3QueryResponse]:
+        """
+        Get a list of all files in a channel
+        :param channel_id: The target channel id
+        :return: The response or None if an exception was raised
+        """
+        response = None
+        try:
+            response = self.connection.ftgetfilelist(cid=channel_id, path='/')
+        except ts3.query.TS3QueryError as exception:
+            # We use debug here, because usually an exception is thrown when the channel is just empty
+            logger.debug(exception)
+        return response
+
+    def edit_channel_description(self, channel_id: str, text: str) -> None:
+        """
+        Edit a channels' description
+        :param channel_id: Target channel id
+        :param text: New channel description
+        """
+        self.connection.channeledit(cid=channel_id, channel_description=text)
+
+    def move_file(self, channel_id: str, target_channel_id: str, file_name: str, new_file_name: str = None) -> None:
+        """
+        Moves (or renames) a file
+        :param channel_id: The channel id where the file currently is located at
+        :param target_channel_id: The target channel id
+        :param file_name: The file name of the file
+        :param new_file_name: The new name for the file after moving it (optional)
+        """
+        if new_file_name is None:
+            new_file_name = file_name
+        try:
+            self.connection.ftrenamefile(cid=channel_id,
+                                         tcid=target_channel_id,
+                                         oldname=f'/{file_name}', newname=f'/{new_file_name}',
+                                         tcpw=str(), cpw=str())
+            logger.info(f'File successfully moved from cid={channel_id} to tcid={target_channel_id}')
+        except ts3.query.TS3QueryError as exception:
+            logger.error(exception)
+            quit()
+
+    def who_am_i(self) -> ts3.query.TS3QueryResponse:
+        """
+        :return: Teamspeak `whoami` command response
+        """
+        return self.connection.whoami()
