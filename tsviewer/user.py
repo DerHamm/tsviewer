@@ -33,7 +33,7 @@ class User(object):
         elif idle_time_in_seconds <= 3600:
             minutes = TimeUtil.to_minutes(milliseconds)
             plural = 's' if minutes > 1 else ''
-            return f'{minutes} minutes' + plural
+            return f'{minutes} minute' + plural
         elif idle_time_in_seconds <= 86400:
             hours = TimeUtil.to_hours(milliseconds)
             plural = 's' if hours > 1 else ''
@@ -86,6 +86,7 @@ class UserBuilder(object):
     This class is builder for `User` and `FakeUser` objects. It's not intensively used yet, but it will ease the
     testing process once the test scenarios become more complicated
     """
+
     def __init__(self, idle_time: str = None, name: str = None, avatar_file_name: str = None,
                  microphone_status: str = None, sound_status: str = None, client_info: ClientInfo = None) -> None:
         self._idle_time = idle_time

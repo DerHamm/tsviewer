@@ -5,6 +5,7 @@ from uuid import uuid4
 from flask import Flask, render_template, session, redirect, url_for, request, Response
 from functools import wraps
 
+from tsviewer.channel_uploads import ChannelUploads
 from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.avatars import Avatars
@@ -13,7 +14,6 @@ from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenti
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 from tsviewer.logger import get_logger
-
 
 configuration = Configuration.get_instance()
 logger = get_logger(__name__)
@@ -57,7 +57,6 @@ def check_password(func) -> typing.Callable:
 
 if __name__ in ['__main__', get_application_name()]:
     client = TsViewerClient(configuration=configuration)
-
     avatars = Avatars(configuration.teamspeak_install_path, server_id=str(configuration.server_id))
 
     # TODO: Add a configuration field for the port of the Flask server (must be done with the flask command, so the port

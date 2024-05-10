@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 from json import load
+from tsviewer.ts_viewer_utils import resolve_with_project_path
 
 
 @dataclass
@@ -74,5 +75,5 @@ class ClientInfo:
 
 fake_user_base_client_info: ClientInfo
 
-with Path('test/resources/clientinfo.json').open('r') as client_info_template:
+with resolve_with_project_path('test/resources/clientinfo.json').open('r') as client_info_template:
     fake_user_base_client_info = ClientInfo(**load(client_info_template))
