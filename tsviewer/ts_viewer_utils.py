@@ -84,6 +84,15 @@ class TimeUtil(object):
         """
         return days * 24 * 60 * 60 * 1000
 
+    @staticmethod
+    def to_milliseconds(milliseconds: int) -> float:
+        """
+        Convert milliseconds from an int to a float representation (E.g. 1 -> 0.001 | 250 -> 0.25) for `time.sleep`
+        :param milliseconds:
+        :return:
+        """
+        return (1 / 1000) * milliseconds
+
 
 def display_error(message: str, exception: Exception = None) -> None:
     """

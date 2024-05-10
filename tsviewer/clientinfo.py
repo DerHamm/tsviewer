@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from pathlib import Path
 from json import load
 from tsviewer.ts_viewer_utils import resolve_with_project_path
 

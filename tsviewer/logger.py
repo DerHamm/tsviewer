@@ -1,8 +1,9 @@
 import logging
-import sys
-
+from logging.config import dictConfig
 from tsviewer.configuration import Configuration
 from pathlib import Path
+
+__all__ = ['logger']
 
 configuration = Configuration.get_instance()
 log_path = Path(configuration.log_path)
@@ -11,27 +12,26 @@ append_to_console = False
 if log_path.exists() and not log_path.parent.is_dir() and configuration.log_path != str():
     try:
         log_path.mkdir()
-
     except (OSError, Exception):
         print('Could not create log directory, falling bag to console appender')
         append_to_console = True
 else:
     append_to_console = True
 
-logger = None
+# TODO: Revise this: We use dictConfig for setting up logging because flask recommends this way of doing it
+# TODO: We may use a yaml file instead of this dict, but we have to use variables within it somehow
+level_string = 'DEBUG' if configuration.debug else 'ERROR'
+logging_config = {'version': 1,
+                  'formatters':
+                      {'simple': {'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'}},
+                  'handlers': {
+                      'console': {'class': 'logging.StreamHandler', 'level': level_string, 'formatter': 'simple',
+                                  'stream': 'ext://sys.stdout'},
+                      'file': {'class': 'logging.FileHandler', 'level': level_string, 'formatter': 'simple',
+                               'filename': configuration.log_path}},
+                  'loggers': {'console': {'level': 'DEBUG', 'handlers': ['console'], 'propagate': False},
+                              'file': {'level': 'DEBUG', 'handlers': ['file'], 'propagate': False}},
+                  'root': {'level': 'DEBUG', 'handlers': ['console', 'file']}}
+dictConfig(logging_config)
 
-
-def get_logger(name: str, to_file: str = 'log/tsviewer.log') -> logging.Logger:
-    global logger
-    if logger is None:
-        logger = logging.getLogger(name)
-    else:
-        return logger
-
-    level = logging.DEBUG if configuration.debug else logging.WARNING
-    print(f'Logfile can be created: {log_path.is_dir()}')
-    if not append_to_console:
-        logging.basicConfig(filename=to_file, encoding='utf-8', level=level)
-    else:
-        logging.basicConfig(stream=sys.stderr, encoding='utf-8', level=level)
-    return logger
+logger = logging.getLogger('flask_tsviewer.app')

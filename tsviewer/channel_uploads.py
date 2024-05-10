@@ -1,25 +1,13 @@
 # Beware: This class ignores sub-folders within the channels
-import io
-import time
-from pathlib import Path
 
 import ts3
 
 from tsviewer.configuration import Configuration
 from tsviewer.ts_viewer_client import TsViewerClient
-from tsviewer.logger import get_logger
+from tsviewer.logger import logger
 from urllib.parse import quote
 import random
-import socket
-from imghdr import what
-
-
-def milliseconds(seconds: int) -> float:
-    return (1 / 1000) * seconds
-
-
-# TODO: Create avatars folder automatically
-# TODO: Move milliseconds
+from tsviewer.file_transfers import download_file
 
 
 class ChannelUploads(object):
@@ -37,7 +25,6 @@ class ChannelUploads(object):
         self.client = client
         self.files = None
         self.channel_to_file_map = dict()
-        self.logger = get_logger(__name__)
 
     def clean_up(self) -> None:
         """
@@ -53,7 +40,7 @@ class ChannelUploads(object):
                     self.move_file_to_upload_channel(cid, file_name)
                 except ts3.query.TS3QueryError as exception:
                     print(exception, f'Error while moving files to the upload channel')
-                    self.logger.error(exception)
+                    logger.error(exception)
                     quit(0)
         self.update_upload_channel_description()
 
@@ -104,7 +91,7 @@ class ChannelUploads(object):
                     channel_to_file_map[cid].append(file_list)
             except ts3.query.TS3QueryError as exception:
                 print(f'Error for channel id {cid}. Assuming channel is empty')
-                self.logger.error(exception)
+                logger.error(exception)
         self.files = files
         self.channel_to_file_map = channel_to_file_map
         return files
@@ -120,7 +107,7 @@ class ChannelUploads(object):
 
     def _download_avatars_to_static_folder(self) -> None:
         raw_files = self.client.connection.ftgetfilelist(cid=ChannelUploads.AVATAR_CHANNEL_ID, path='/').parsed
-
+        downloaded_files = 0
         for file in raw_files:
             download_response = self.client.connection.ftinitdownload(clientftfid=random.randint(1, 64000),
                                                                       name=f"/{file['name']}",
@@ -128,31 +115,9 @@ class ChannelUploads(object):
                                                                       seekpos=0)
             if file.get('name') == 'icons':
                 continue
+            downloaded_files += download_file(download_response, file['name']) is not None
 
-            port = int(download_response.parsed[0].get('port', 30033))
-            # Damn, I really didn't expect to need sockets for this
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            address = (self.client.configuration.server_query_host, port)
-            try:
-                sock.connect(address)
-                sock.sendall(download_response.parsed[0]['ftkey'].encode())
-                size = int(download_response.parsed[0]['size'])
-                image = b''
-                while True:
-                    response_bytes = sock.recv(size)
-                    image += response_bytes
-                    time.sleep(milliseconds(250))
-                    if response_bytes == b'':
-                        break
-
-                file_extension = what(io.BytesIO(image))
-                with Path(f'static/avatars/{file["name"]}.{file_extension}').open('wb') as avatar_file:
-                    avatar_file.write(image)
-            # TODO: This gotta be handled
-            except Exception as e:
-                print(e)
-            finally:
-                sock.close()
+        logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
 
 
 def _format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str, file_name: str,
