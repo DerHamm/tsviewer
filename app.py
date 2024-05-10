@@ -1,3 +1,5 @@
+# Ensure proper logging by always importing logger.py first in app.py
+from tsviewer.logger import logger
 import random
 import typing
 from uuid import uuid4
@@ -13,10 +15,8 @@ from tsviewer.user import build_fake_user
 from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
-from tsviewer.logger import get_logger
 
 configuration = Configuration.get_instance()
-logger = get_logger(__name__)
 
 DEBUG = configuration.debug
 DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
@@ -61,7 +61,10 @@ if __name__ in ['__main__', get_application_name()]:
 
     # TODO: Add a configuration field for the port of the Flask server (must be done with the flask command, so the port
     # TODO: should probably be in the dockerfile
+
     app = Flask(get_application_name(), template_folder='template')
+
+    logger.info('Flask application setup and running')
     app.session_interface = TsViewerSecureCookieSessionInterface(configuration.cookie_signing_salt)
     app.secret_key = configuration.cookie_secret_key
 

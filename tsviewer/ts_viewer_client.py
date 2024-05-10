@@ -4,7 +4,7 @@ import ts3
 import random
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
-from tsviewer.logger import get_logger
+from tsviewer.logger import logger
 from tsviewer.user import User
 from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME, display_error
 
@@ -22,7 +22,6 @@ class TsViewerClient(object):
         :param configuration: Configuration File object
         """
         self.configuration = configuration
-        self.logger = get_logger(__name__)
         try:
 
             self.connection = ts3.query.TS3Connection(self.configuration.server_query_host,
@@ -35,7 +34,7 @@ class TsViewerClient(object):
             message = f'Could not connect to host at: ' \
                       f'{configuration.server_query_host}:{configuration.server_query_port}\n'
             display_error(message, connection_error)
-            self.logger.error(message, connection_error)
+            logger.error(message, connection_error)
             self.connection = None
 
     def get_client_info(self, clid: str) -> ClientInfo:
