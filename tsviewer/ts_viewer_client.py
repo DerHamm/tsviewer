@@ -16,6 +16,7 @@ class TsViewerClient(object):
     This class is essentially a wrapper around the `ts3`-API.
     It provides some extra methods and uses the configuration to acquire a connection to the Teamspeak Server.
     """
+    connection: ts3.query.TS3Connection
 
     def __init__(self, configuration: Configuration = None) -> None:
         """
@@ -212,3 +213,41 @@ class TsViewerClient(object):
         :return: Teamspeak `whoami` command response
         """
         return self.connection.whoami()
+
+    def send_message_to_client(self, message: str, client_id: str) -> None:
+        """
+        Send a message to the specified client
+        :param message: Message text
+        :param client_id: Target client id
+        """
+        self.connection.sendtextmessage(targetmode="1", target=client_id, msg=message)
+
+    def send_message_to_channel(self, message: str, channel_id: str) -> None:
+        """
+        Send a message to the specified channel
+        :param message: Message text
+        :param channel_id: Target channel id
+        """
+        who_am_i = self.who_am_i().parsed
+        serveradmin_client_id = who_am_i[0]['client_id']
+
+        # Move to target channel
+        self.connection.clientmove(clid=serveradmin_client_id, cid=channel_id)
+
+        # Send the message (Maybe we should move back afterwards?)
+        self.connection.sendtextmessage(targetmode="2", msg=message, target='')
+
+    def send_message_to_server(self, message: str) -> None:
+        """
+        Send a message to server
+        :param message: Message text
+        """
+        self.connection.sendtextmessage(targetmode="3", msg=message, target='')
+
+    def poke_client(self, message: str, client_id: str) -> None:
+        """
+        Poke a client with the specified message
+        :param message: The message to be sent
+        :param client_id: The target client id
+        """
+        self.connection.clientpoke(msg=message, clid=client_id)

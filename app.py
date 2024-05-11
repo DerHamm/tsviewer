@@ -17,13 +17,12 @@ from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 
 configuration = Configuration.get_instance()
 
-DEBUG = configuration.debug
 DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
 DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
 
 
 def get_user_list(ts_client: TsViewerClient) -> list[User]:
-    if ts_client.connection is None or DEBUG:
+    if ts_client.connection is None or configuration.debug:
         users = [build_fake_user() for _ in range(10)]
     else:
         users = ts_client.get_user_list()
@@ -58,10 +57,18 @@ if __name__ in ['__main__', get_application_name()]:
     client = TsViewerClient(configuration=configuration)
 
     if configuration.clean_up_upload_channel:
+        def execute_clean_up() -> None:
+            uploads = ChannelUploads(client)
+            uploads.clean_up()
+            uploads.download_avatars_to_static_folder()
+
+
+        from threading import Thread
+
+        thread = Thread(target=execute_clean_up)
         logger.info('clean_up_upload_channel is set to True. The cleanup process will now be executed.')
-        uploads = ChannelUploads(client)
-        uploads.clean_up()
-        uploads.download_avatars_to_static_folder()
+        thread.start()
+
     # TODO: Add a configuration field for the port of the Flask server (must be done with the flask command, so the port
     # TODO: should probably be in the dockerfile
 
@@ -79,7 +86,7 @@ if __name__ in ['__main__', get_application_name()]:
         # avatars.update_avatars(users)
 
         # multiply users times 10 for testing purposes
-        return render_template('index.html', users=users, avatars=avatars,
+        return render_template('index.html', users=users,
                                random_image=lambda: random.choice(['/static/unnamed1.png', '/static/unnamed.jpg ']),
                                is_admin=is_admin(session))
 

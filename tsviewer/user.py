@@ -3,7 +3,7 @@ from tsviewer.clientinfo import ClientInfo, fake_user_base_client_info
 import random
 import string
 
-from tsviewer.ts_viewer_utils import TimeUtil
+from tsviewer.ts_viewer_utils import TimeUtil, resolve_with_project_path
 
 
 class User(object):
@@ -56,7 +56,17 @@ class User(object):
         Shorthand for the `ClientInfo.client_base64HashClientUID`
         :return: Clients avatar filename
         """
-        return self.client_info.client_base64HashClientUID
+        # TODO: There's gotta be a better way to do this, but it works for now
+        from pathlib import Path
+        file_name = self.client_info.client_base64HashClientUID
+        for possible_path in [Path(f'avatar_{file_name}.png'),
+                              Path(f'avatar_{file_name}.jpg'),
+                              Path(f'avatar_{file_name}.jpeg'),
+                              Path(f'avatar_{file_name}.webp')]:
+            absolute_path = resolve_with_project_path('static/' + str(possible_path))
+            if absolute_path.is_file():
+                return str(possible_path)
+        return str()
 
     @property
     def microphone_status(self) -> str:
