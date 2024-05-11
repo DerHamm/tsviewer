@@ -1,12 +1,9 @@
 # Beware: This class ignores sub-folders within the channels
-
-import ts3
-
 from tsviewer.configuration import Configuration
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.logger import logger
 from urllib.parse import quote
-import random
+
 from tsviewer.file_transfers import download_file
 
 
@@ -107,5 +104,5 @@ def _format_url_as_link_in_channel_description(host: str, port: str, server_uid:
                                                size: str,
                                                file_date_time: str) -> str:
     url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}' \
-          f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time} '
+          f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time}'
     return f'[URL={url}]{file_name}[/URL]'
