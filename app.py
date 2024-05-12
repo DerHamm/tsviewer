@@ -55,10 +55,11 @@ def check_password(func) -> typing.Callable:
 
 if __name__ in ['__main__', get_application_name()]:
     client = TsViewerClient(configuration=configuration)
-
+    uploads = ChannelUploads(client)
+    client.uploads = uploads
     if configuration.clean_up_upload_channel:
         def execute_clean_up() -> None:
-            uploads = ChannelUploads(client)
+
             uploads.clean_up()
             uploads.download_avatars_to_static_folder()
 
