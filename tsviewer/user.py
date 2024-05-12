@@ -1,4 +1,6 @@
 import copy
+import typing
+
 from tsviewer.clientinfo import ClientInfo, fake_user_base_client_info
 import random
 import string
@@ -10,11 +12,12 @@ class User(object):
     """ User is a representation of a client's information for displaying purposes.
      You have to provide a ``ClientInfo`` object to instantiate it"""
 
-    def __init__(self, client_info: ClientInfo = None) -> None:
+    def __init__(self, client_info: ClientInfo = None, avatar_file_name: typing.Optional[str] = None) -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
         """
         self.client_info = client_info
+        self._avatar_file_name = avatar_file_name
 
     @property
     def idle_time(self) -> str:
@@ -53,20 +56,14 @@ class User(object):
     @property
     def avatar_file_name(self) -> str:
         """
-        Shorthand for the `ClientInfo.client_base64HashClientUID`
+        Obtain the avatar file name for display
         :return: Clients avatar filename
         """
-        # TODO: There's gotta be a better way to do this, but it works for now
-        from pathlib import Path
-        file_name = self.client_info.client_base64HashClientUID
-        for possible_path in [Path(f'avatar_{file_name}.png'),
-                              Path(f'avatar_{file_name}.jpg'),
-                              Path(f'avatar_{file_name}.jpeg'),
-                              Path(f'avatar_{file_name}.webp')]:
-            absolute_path = resolve_with_project_path('static/' + str(possible_path))
-            if absolute_path.is_file():
-                return str(possible_path)
-        return str()
+        return self._avatar_file_name
+
+    @property
+    def has_avatar(self) -> bool:
+        return self._avatar_file_name is not None
 
     @property
     def microphone_status(self) -> str:
@@ -179,3 +176,4 @@ def build_fake_user(idle_time: str = None,
     # With this approach it won't be complicated to add property based testing later on
     return UserBuilder().idle_time(idle_time).name(name).avatar_file_name(avatar_file_name).sound_status(
         sound_status).microphone_status(microphone_status).build_as_fake_user()
+
