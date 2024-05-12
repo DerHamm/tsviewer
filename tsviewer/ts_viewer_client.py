@@ -2,7 +2,6 @@ import typing
 
 import ts3
 import random
-from pathlib import Path
 
 from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
@@ -20,15 +19,38 @@ class TsViewerClient(object):
     """
     _connection: typing.Optional[ts3.query.TS3Connection]
 
+    def __init__(self, configuration: Configuration = None) -> None:
+        """
+        Connects and authorizes against the configurated Teamspeak Server.
+        Exit the application if not connection could be build
+        :param configuration: Configuration File object
+        """
+        self._connection_retries = 0
+        self._connection = None
+        self.configuration = configuration
+        self.channel_ids = self.get_channel_id_list()
+        self.uploads = None
+
     @property
     def connection(self) -> ts3.query.TS3Connection:
-        print('obtaining connection')
-        if self._connection is None or not self._connection.is_connected():
-            print('have to reconnect, oh no')
-            return self.reconnect()
+        not_connected = False
+        try:
+            self._connection.whoami()
+        except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError) as exception:
+            not_connected = True
+
+        if self._connection is None or not self._connection.is_connected() or not_connected:
+            if self._connection_retries == 2:
+                logger.error('Retry failed, aborting TsViewer')
+                quit(0)
+            self._connection_retries += 1
+            logger.info('Not connected to the Teamspeak server, trying to obtain connection')
+            return self._reconnect()
+        else:
+            self._connection_retries = 0
         return self._connection
 
-    def reconnect(self) -> ts3.query.TS3Connection:
+    def _reconnect(self) -> ts3.query.TS3Connection:
         if self._connection is not None:
             self._connection.close()
         try:
@@ -43,18 +65,6 @@ class TsViewerClient(object):
             logger.error(message, connection_error)
             self._connection = None
         return self._connection
-
-    def __init__(self, configuration: Configuration = None) -> None:
-        """
-        Connects and authorizes against the configurated Teamspeak Server.
-        Exit the application if not connection could be build
-        :param configuration: Configuration File object
-        """
-        self._connection = None
-        self.configuration = configuration
-        self.reconnect()
-        self.channel_ids = self.get_channel_id_list()
-        self.uploads = None
 
     def get_client_info(self, clid: str) -> ClientInfo:
         """
@@ -170,16 +180,6 @@ class TsViewerClient(object):
             users.append(User(client_info, avatar_file_name=avatar_file_name))
         return users
 
-    def _update_avatar(self, client_base64_hash_uid: str) -> typing.Optional[str]:
-        file_name = f'avatar_{client_base64_hash_uid}'
-        self.uploads.download_avatar(file_name)
-        avatar_file_name = None
-        for possible_path in _get_possible_file_names(file_name):
-            absolute_path = resolve_with_project_path('static/' + possible_path)
-            if absolute_path.is_file():
-                avatar_file_name = possible_path
-        return avatar_file_name
-
     def init_file_download(self, file_name: str, channel_id: str) -> ts3.query.TS3QueryResponse:
         """
         Initialize a file download and return the response
@@ -279,3 +279,13 @@ class TsViewerClient(object):
         :param client_id: The target client id
         """
         self.connection.clientpoke(msg=message, clid=client_id)
+
+    def _update_avatar(self, client_base64_hash_uid: str) -> typing.Optional[str]:
+        file_name = f'avatar_{client_base64_hash_uid}'
+        self.uploads.download_avatar(file_name)
+        avatar_file_name = None
+        for possible_path in _get_possible_file_names(file_name):
+            absolute_path = resolve_with_project_path('static/' + possible_path)
+            if absolute_path.is_file():
+                avatar_file_name = possible_path
+        return avatar_file_name
