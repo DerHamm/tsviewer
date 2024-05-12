@@ -156,6 +156,13 @@ def is_authenticated(session: dict[str: str]) -> bool:
     return session.get('role') in ['user', 'admin']
 
 
+def _get_possible_file_names(base_name: str) -> list[str]:
+    return [f'{base_name}.png',
+            f'{base_name}.jpg',
+            f'{base_name}.jpeg',
+            f'{base_name}.webp']
+
+
 def __generate_dataclass(name: str, source: dict[str, str]) -> str:
     """
     Generate code for a dataclass like `Clientinfo` by a given dict.

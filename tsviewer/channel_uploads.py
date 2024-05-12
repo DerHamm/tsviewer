@@ -1,4 +1,6 @@
 # Beware: This class ignores sub-folders within the channels
+from typing import Optional
+
 from tsviewer.configuration import Configuration
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.logger import logger
@@ -79,12 +81,20 @@ class ChannelUploads(object):
         raw_files = self.client.get_file_list(ChannelUploads.AVATAR_CHANNEL_ID).parsed
         downloaded_files = 0
         for file in raw_files:
-            download_response = self.client.init_file_download(file['name'], ChannelUploads.AVATAR_CHANNEL_ID)
             if file.get('name') == 'icons':
                 continue
-            downloaded_files += download_file(download_response, file['name']) is not None
+            downloaded_files += self.download_avatar(file['name']) is not None
 
         logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
+
+    def download_avatar(self, file_name: str) -> Optional[str]:
+        """
+        Download an avatar specified by the file name / client uid
+        :param file_name: The file name / client uid
+        :return: The response of `download_file`
+        """
+        download_response = self.client.init_file_download(file_name, ChannelUploads.AVATAR_CHANNEL_ID)
+        return download_file(download_response, file_name)
 
     def _get_files_from_channel(self, channel_id: str) -> list[str]:
         return self.channel_to_file_map.get(channel_id)

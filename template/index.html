@@ -47,7 +47,9 @@
                 <sl-icon class="status-icon" name="{{user.microphone_status}}"></sl-icon>
                 <sl-icon class="status-icon" name="{{user.sound_status}}"></sl-icon>
             </div>
+            {% if user.has_avatar %}
             <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/>
+            {% endif %}
         </sl-card>
         <div class="content-centered">
             <sl-divider></sl-divider>
