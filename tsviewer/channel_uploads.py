@@ -18,7 +18,7 @@ class ChannelUploads(object):
     def __init__(self, client: 'TsViewerClient') -> None:
         """
         `ChannelUploads` requires a designated upload channel for it`s functionalities.
-        :param upload_channel_id: ID of the designated upload channel.
+        :param client: Instance of `TsViewerClient`
         """
         self.upload_channel_id = Configuration.get_instance().upload_channel_id
         self.client = client
