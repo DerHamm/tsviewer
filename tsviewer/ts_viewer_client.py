@@ -36,7 +36,7 @@ class TsViewerClient(object):
         not_connected = False
         try:
             self._connection.whoami()
-        except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError) as exception:
+        except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError) as _:
             not_connected = True
 
         if self._connection is None or not self._connection.is_connected() or not_connected:

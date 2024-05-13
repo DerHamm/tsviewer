@@ -5,7 +5,7 @@ from tsviewer.clientinfo import ClientInfo, fake_user_base_client_info
 import random
 import string
 
-from tsviewer.ts_viewer_utils import TimeUtil, resolve_with_project_path
+from tsviewer.ts_viewer_utils import TimeUtil
 
 
 class User(object):

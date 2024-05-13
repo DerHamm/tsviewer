@@ -19,7 +19,7 @@ else:
     append_to_console = True
 
 
-#level_string = 'DEBUG' if configuration.debug else 'ERROR'
+# level_string = 'DEBUG' if configuration.debug else 'ERROR'
 level_string = 'DEBUG'  # for now
 # TODO: Revise this: We use dictConfig for setting up logging because flask recommends this way of doing it
 # TODO: We may use a yaml file instead of this dict, but we have to use variables within it somehow
