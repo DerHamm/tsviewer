@@ -78,6 +78,22 @@ if __name__ in ['__main__', get_application_name()]:
     app.secret_key = configuration.cookie_secret_key
 
 
+
+    f = uploads.get_files()
+    from tsviewer.ts_viewer_utils import __generate_dataclass
+    print(f)
+    print(__generate_dataclass('File', f[0][0]))
+
+    from tsviewer.ts_file import File
+    for d in f[0]:
+
+
+        print(dict(**d))
+
+        print(File(**d))
+
+
+
     @app.route("/", methods=['GET', 'POST'])
     @check_password
     def index():
@@ -110,3 +126,9 @@ if __name__ in ['__main__', get_application_name()]:
         if is_authenticated(session):
             return redirect_to_index()
         return render_template('login.html')
+
+    @app.route('/files', methods=['GET'])
+    def files():
+        file_list = uploads.get_files()
+
+        return render_template('files.html')
