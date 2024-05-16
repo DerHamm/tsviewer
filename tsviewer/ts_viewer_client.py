@@ -37,6 +37,7 @@ class TsViewerClient(object):
         try:
             self._connection.whoami()
         except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError) as _:
+            logger.info('Whoami command failed')
             not_connected = True
 
         if self._connection is None or not self._connection.is_connected() or not_connected:
@@ -64,7 +65,7 @@ class TsViewerClient(object):
             display_error(message, connection_error)
             logger.error(message, connection_error)
             self._connection = None
-        return self._connection
+        return self.connection
 
     def get_client_info(self, clid: str) -> ClientInfo:
         """

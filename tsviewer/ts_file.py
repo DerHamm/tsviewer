@@ -1,18 +1,20 @@
-import dataclasses
 from typing import Optional
 
 
-@dataclasses.dataclass
 class File(object):
-    cid: str
-    path: str
-    name: str
-    size: str
-    datetime: str
-    type: str
+    # Fields from Teamspeak Server Query Result
+    cid: Optional[str]
+    path: Optional[str]
+    name: Optional[str]
+    size: Optional[str]
+    datetime: Optional[str]
+    type: Optional[str]
 
-    def __init__(self, cid: str = '', path: str = '', name: str = '', size: str = '', datetime: str = '',
-                 type: str = '') -> None:
+    # TODO: Maybe we just implement it ourselves and map the kwargs to their correct names or something
+    # The name `type` is already in outer scope, but this is needed for the dataclass to work
+    # noinspection PyShadowingBuiltins
+    def __init__(self, cid: str = None, path: str = None, name: str = None, size: str = None, datetime: str = None,
+                 type: str = None) -> None:
         """
         File object for the files returned by the FTGETFILELIST command
         :param cid: The channel id (optional)
@@ -28,3 +30,9 @@ class File(object):
         self.size = size
         self.datetime = datetime
         self.type = type
+
+    def __repr__(self) -> str:
+        return f'File[cid={self.cid}, path={self.path}, size={self.size}, datetime={self.datetime}]'
+
+    def __str__(self) -> str:
+        return repr(self)

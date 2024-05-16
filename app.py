@@ -14,6 +14,7 @@ from tsviewer.user import build_fake_user
 from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
+from tsviewer.ts_file import File
 
 configuration = Configuration.get_instance()
 
@@ -78,22 +79,6 @@ if __name__ in ['__main__', get_application_name()]:
     app.secret_key = configuration.cookie_secret_key
 
 
-
-    f = uploads.get_files()
-    from tsviewer.ts_viewer_utils import __generate_dataclass
-    print(f)
-    print(__generate_dataclass('File', f[0][0]))
-
-    from tsviewer.ts_file import File
-    for d in f[0]:
-
-
-        print(dict(**d))
-
-        print(File(**d))
-
-
-
     @app.route("/", methods=['GET', 'POST'])
     @check_password
     def index():
@@ -127,8 +112,10 @@ if __name__ in ['__main__', get_application_name()]:
             return redirect_to_index()
         return render_template('login.html')
 
-    @app.route('/files', methods=['GET'])
-    def files():
-        file_list = uploads.get_files()
 
-        return render_template('files.html')
+    @app.route('/files', methods=['GET'])
+    @check_password
+    def files():
+        uploaded_files = uploads.get_files()
+        files = [File(**uploaded_file) for uploaded_file in uploaded_files[0]]
+        return render_template('files.html', files=files)
