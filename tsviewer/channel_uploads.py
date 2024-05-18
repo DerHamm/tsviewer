@@ -42,13 +42,13 @@ class ChannelUploads(object):
         configuration = Configuration.get_instance()
         tag_list = list()
         for file in upload_channel_files:
-            tag = _format_url_as_link_in_channel_description(configuration.server_query_host,
-                                                             str(configuration.server_voice_port),
-                                                             server_uid,
-                                                             self.upload_channel_id,
-                                                             file['name'],
-                                                             file['size'],
-                                                             file['datetime'])
+            tag = ChannelUploads._format_url_as_bb_code_link_for_channel_description(configuration.server_query_host,
+                                                                                     str(configuration.server_voice_port),
+                                                                                     server_uid,
+                                                                                     self.upload_channel_id,
+                                                                                     file['name'],
+                                                                                     file['size'],
+                                                                                     file['datetime'])
             tag_list.append(tag)
         self.client.edit_channel_description(configuration.upload_channel_id, '\n\n'.join(tag_list))
 
@@ -78,13 +78,22 @@ class ChannelUploads(object):
         """
         Downloads all avatars to the static folder
         """
+        from multiprocessing.pool import ThreadPool
+
         raw_files = self.client.get_file_list(ChannelUploads.AVATAR_CHANNEL_ID).parsed
         downloaded_files = 0
+        response_file_name_list = list()
+
         for file in raw_files:
             if file.get('name') == 'icons':
                 continue
-            downloaded_files += self.download_avatar(file['name']) is not None
+            #downloaded_files += self.download_avatar(file['name']) is not None
+            download_response = self.client.init_file_download(file['name'], ChannelUploads.AVATAR_CHANNEL_ID)
 
+            response_file_name_list.append((file['name'], download_response))
+
+        #with ThreadPool(processes=6) as pool:
+        #    pool.map(download_file, response_file_name_list)
         logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
 
     def download_avatar(self, file_name: str) -> Optional[str]:
@@ -109,10 +118,26 @@ class ChannelUploads(object):
             for file in files:
                 self.client.move_file(cid, self.upload_channel_id, file['name'])
 
+    @staticmethod
+    def _format_url_as_bb_code_link_for_channel_description(host: str, port: str, server_uid: str, channel_id: str,
+                                                            file_name: str,
+                                                            size: str,
+                                                            file_date_time: str) -> str:
+        return ChannelUploads._wrap_as_url_tag(
+            ChannelUploads.format_url_as_link_in_channel_description(host, port, server_uid, channel_id, file_name,
+                                                                     size,
+                                                                     file_date_time),
+            file_name)
 
-def _format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str, file_name: str,
-                                               size: str,
-                                               file_date_time: str) -> str:
-    url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}' \
-          f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time}'
-    return f'[URL={url}]{file_name}[/URL]'
+    @staticmethod
+    def format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str,
+                                                  file_name: str,
+                                                  size: str,
+                                                  file_date_time: str) -> str:
+        url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}' \
+              f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time}'
+        return url
+
+    @staticmethod
+    def _wrap_as_url_tag(url: str, file_name: str) -> str:
+        return f'[URL={url}]{file_name}[/URL]'
