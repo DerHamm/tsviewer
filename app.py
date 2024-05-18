@@ -63,6 +63,7 @@ if __name__ in ['__main__', get_application_name()]:
             uploads.clean_up()
             uploads.download_avatars_to_static_folder()
 
+
         from threading import Thread
 
         thread = Thread(target=execute_clean_up)
@@ -117,5 +118,7 @@ if __name__ in ['__main__', get_application_name()]:
     @check_password
     def files():
         uploaded_files = uploads.get_files()
-        files = [File(**uploaded_file) for uploaded_file in uploaded_files[0]]
-        return render_template('files.html', files=files)
+        file_list = list()
+        for uploaded_file in uploaded_files[0]:
+            file_list.append(File(**uploaded_file))
+        return render_template('files.html', files=file_list)
