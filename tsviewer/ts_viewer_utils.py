@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import ts3
-
 CLIENT_ID = 'clid'
 CHANNEL_ID = 'cid'
 CLIENT_NICKNAME = 'client_nickname'
@@ -156,12 +154,6 @@ def is_authenticated(session: dict[str: str]) -> bool:
     :return: True if user is an admin or a user
     """
     return session.get('role') in ['user', 'admin']
-
-
-class DownloadResponseWrapper(object):
-    def __init__(self, file_transfer_init_download_response: ts3.query.TS3QueryResponse, file_name: str) -> None:
-        self.file_transfer_init_download_response = file_transfer_init_download_response
-        self.file_name = file_name
 
 
 def _get_possible_file_names(base_name: str) -> list[str]:
