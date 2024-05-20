@@ -63,9 +63,7 @@ if __name__ in ['__main__', get_application_name()]:
             uploads.clean_up()
             uploads.download_avatars_to_static_folder()
 
-
         from threading import Thread
-
         thread = Thread(target=execute_clean_up)
         logger.info('clean_up_upload_channel is set to True. The cleanup process will now be executed.')
         thread.start()

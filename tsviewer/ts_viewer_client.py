@@ -286,7 +286,7 @@ class TsViewerClient(object):
         self.uploads.download_avatar(file_name)
         avatar_file_name = None
         for possible_path in _get_possible_file_names(file_name):
-            absolute_path = resolve_with_project_path('static/' + possible_path)
+            absolute_path = resolve_with_project_path('static/avatars/' + possible_path)
             if absolute_path.is_file():
-                avatar_file_name = possible_path
+                avatar_file_name = 'avatars/' + possible_path
         return avatar_file_name
