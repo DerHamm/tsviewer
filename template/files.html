@@ -18,7 +18,8 @@
     <sl-card class="content-centered">
         <div slot="header">
             <p>{{file.name}}</p>
-            <sl-icon-button name="download" label="Download" href="{{url_for('static', filename=file.name)}}">
+            <sl-icon-button name="download" label="Download" href="{{file.url}}">
+
             </sl-icon-button>
         </div>
     </sl-card>

@@ -14,7 +14,7 @@ class File(object):
     # The name `type` is already in outer scope, but this is needed for the dataclass to work
     # noinspection PyShadowingBuiltins
     def __init__(self, cid: str = None, path: str = None, name: str = None, size: str = None, datetime: str = None,
-                 type: str = None) -> None:
+                 type: str = None, url: str = None) -> None:
         """
         File object for the files returned by the FTGETFILELIST command
         :param cid: The channel id (optional)
@@ -30,6 +30,7 @@ class File(object):
         self.size = size
         self.datetime = datetime
         self.type = type
+        self.url = url
 
     def __repr__(self) -> str:
         return f'File[cid={self.cid}, path={self.path}, size={self.size}, datetime={self.datetime}]'
