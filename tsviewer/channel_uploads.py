@@ -130,6 +130,8 @@ class ChannelUploads(object):
             file_name)
 
     @staticmethod
+
+    # TODO: Document those methods
     def format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str,
                                                   file_name: str,
                                                   size: str,
