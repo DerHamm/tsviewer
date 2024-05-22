@@ -3,3 +3,5 @@
 *.xml
 config.json
 flask_tsviewer.iml
+/static/avatars/
+/log/
