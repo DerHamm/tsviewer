@@ -14,6 +14,14 @@ class ChannelUploads(object):
     This class provides an interface to all uploaded files on the connected Teamspeak server.
     """
     AVATAR_CHANNEL_ID = '0'
+    """
+    This is a mapping of channel IDs to whatever is returned by the `FTGETFILELIST` command 
+    """
+    channel_to_file_map: dict
+    """
+    A collection of all files that were found on the server
+    """
+    files: Optional[list]
 
     def __init__(self, client: 'TsViewerClient') -> None:
         """
@@ -123,6 +131,10 @@ class ChannelUploads(object):
                                                             file_name: str,
                                                             size: str,
                                                             file_date_time: str) -> str:
+        """
+        Apply `ChannelUploads._wrap_as_url_tag` and `ChannelUploads.format_url_as_link_in_channel_description` to the
+        supplied parameters. For more information, look at the methods mentioned above
+        """
         return ChannelUploads._wrap_as_url_tag(
             ChannelUploads.format_url_as_link_in_channel_description(host, port, server_uid, channel_id, file_name,
                                                                      size,
@@ -130,16 +142,31 @@ class ChannelUploads(object):
             file_name)
 
     @staticmethod
-
-    # TODO: Document those methods
     def format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str,
                                                   file_name: str,
                                                   size: str,
                                                   file_date_time: str) -> str:
+        """
+        Create an URL that points to the specified file.
+        :param host: The server host
+        :param port: The server port
+        :param server_uid: The server UID
+        :param channel_id: The channel id of the file
+        :param file_name: The file name of the file
+        :param size: The file size of the file
+        :param file_date_time: The last modified timestamp
+        :return: An URL in the `ts3file` format
+        """
         url = f'ts3file://{host}?port={port}&serverUID={quote(server_uid)}&channel={channel_id}' \
               f'&path=%2F&filename={quote(file_name)}&isDir=0&size={size}&fileDateTime={file_date_time}'
         return url
 
     @staticmethod
     def _wrap_as_url_tag(url: str, file_name: str) -> str:
+        """
+        Wrap a `ts3file` URL in an BB-Code URL-Tag
+        :param url: The URL
+        :param file_name: The file name to be displayed (This may differ from the actual file name)
+        :return:
+        """
         return f'[URL={url}]{file_name}[/URL]'
