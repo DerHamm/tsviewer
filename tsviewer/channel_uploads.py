@@ -13,7 +13,7 @@ class ChannelUploads(object):
     """
     This class provides an interface to all uploaded files on the connected Teamspeak server.
     """
-    AVATAR_CHANNEL_ID = '0'
+
     """
     This is a mapping of channel IDs to whatever is returned by the `FTGETFILELIST` command 
     """
@@ -22,6 +22,8 @@ class ChannelUploads(object):
     A collection of all files that were found on the server
     """
     files: Optional[list]
+
+    AVATAR_CHANNEL_ID = '0'
 
     def __init__(self, client: 'TsViewerClient') -> None:
         """
@@ -86,22 +88,14 @@ class ChannelUploads(object):
         """
         Downloads all avatars to the static folder
         """
-        from multiprocessing.pool import ThreadPool
-
         raw_files = self.client.get_file_list(ChannelUploads.AVATAR_CHANNEL_ID).parsed
         downloaded_files = 0
-        response_file_name_list = list()
 
         for file in raw_files:
             if file.get('name') == 'icons':
                 continue
-            #downloaded_files += self.download_avatar(file['name']) is not None
-            download_response = self.client.init_file_download(file['name'], ChannelUploads.AVATAR_CHANNEL_ID)
+            downloaded_files += self.download_avatar(file['name'])
 
-            response_file_name_list.append((file['name'], download_response))
-
-        #with ThreadPool(processes=6) as pool:
-        #    pool.map(download_file, response_file_name_list)
         logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
 
     def download_avatar(self, file_name: str) -> Optional[str]:
@@ -136,16 +130,16 @@ class ChannelUploads(object):
         supplied parameters. For more information, look at the methods mentioned above
         """
         return ChannelUploads._wrap_as_url_tag(
-            ChannelUploads.format_url_as_link_in_channel_description(host, port, server_uid, channel_id, file_name,
-                                                                     size,
-                                                                     file_date_time),
+            ChannelUploads._format_url_as_link_in_channel_description(host, port, server_uid, channel_id, file_name,
+                                                                      size,
+                                                                      file_date_time),
             file_name)
 
     @staticmethod
-    def format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str,
-                                                  file_name: str,
-                                                  size: str,
-                                                  file_date_time: str) -> str:
+    def _format_url_as_link_in_channel_description(host: str, port: str, server_uid: str, channel_id: str,
+                                                   file_name: str,
+                                                   size: str,
+                                                   file_date_time: str) -> str:
         """
         Create an URL that points to the specified file.
         :param host: The server host
