@@ -92,7 +92,7 @@ class TsViewerClient(object):
         if channel_id == client_channel_id:
             try:
                 self.move(client_id, random.choice(self.channel_ids))
-            except (ts3.TS3Error, Exception) as error:
+            except ts3.TS3Error as error:
                 print(f'Clientmove failed: {error}')
 
     def follow(self, follower_client_id: str, chased_client_id: str) -> None:
@@ -107,7 +107,7 @@ class TsViewerClient(object):
             return None
         try:
             self.move(follower_client_id, chased.cid)
-        except (ts3.TS3Error, Exception) as error:
+        except ts3.TS3Error as error:
             print(f'Clientmove failed: {error}')
 
     def move_around(self) -> None:
@@ -117,7 +117,7 @@ class TsViewerClient(object):
         for client_id in self.get_client_id_list():
             try:
                 self.move(client_id, random.choice(self.channel_ids))
-            except (ts3.TS3Error, Exception) as error:
+            except ts3.TS3Error as error:
                 print(f'Clientmove failed: {error}')
 
     def move(self, client_id: str, channel_id: str) -> None:

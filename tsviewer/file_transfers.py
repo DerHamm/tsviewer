@@ -43,7 +43,7 @@ def download_file(file_transfer_init_download_response: ts3.query.TS3QueryRespon
         with Path(file_path).open('wb') as avatar_file:
             avatar_file.write(image)
         logger.info(f'File successfully downloaded and written to {file_path}')
-    except (socket.error, OSError, ts3.query.TS3QueryError, Exception) as exception:
+    except (socket.error, OSError, ts3.query.TS3QueryError) as exception:
         error_message = f'Due to the exception {exception} the download of file {file_name} did not succeed'
         logger.error(error_message)
     finally:
@@ -72,7 +72,7 @@ def upload_file(file_transfer_init_upload_response: ts3.query.TS3QueryResponse, 
         sleep(TimeUtil.to_milliseconds(400))
         sock.sendall(content)
         logger.info(f'File successfully uploaded')
-    except (socket.error, OSError, ts3.query.TS3QueryError, Exception) as exception:
+    except (socket.error, OSError, ts3.query.TS3QueryError) as exception:
         error_message = f'Due to the exception {exception} the upload of file {file_name} did not succeed'
         logger.error(error_message)
     finally:
