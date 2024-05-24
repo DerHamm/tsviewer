@@ -12,7 +12,7 @@ append_to_console = False
 if log_path.exists() and not log_path.parent.is_dir() and configuration.log_path != str():
     try:
         log_path.mkdir()
-    except (OSError, Exception):
+    except OSError:
         print('Could not create log directory, falling bag to console appender only')
         append_to_console = True
 else:
