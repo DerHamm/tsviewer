@@ -2,9 +2,6 @@
 
 # Frontend
 
-## File Uploads
-- Display the contents of the upload-channel on a sub-site
-
 ## Admin Page (Requires: Login)
 - Build UI for all the troll commands
 - Display client detail information
