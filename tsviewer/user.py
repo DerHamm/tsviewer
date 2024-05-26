@@ -12,12 +12,13 @@ class User(object):
     """ User is a representation of a client's information for displaying purposes.
      You have to provide a ``ClientInfo`` object to instantiate it"""
 
-    def __init__(self, client_info: ClientInfo = None, avatar_file_name: typing.Optional[str] = None) -> None:
+    def __init__(self, client_info: ClientInfo = None, avatar_file_name: typing.Optional[str] = None, client_id: typing.Optional[str] = None) -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
         """
         self.client_info = client_info
         self._avatar_file_name = avatar_file_name
+        self._client_id = client_id
 
     @property
     def idle_time(self) -> str:
@@ -81,6 +82,14 @@ class User(object):
         """
         return 'volume-mute' if self.client_info.client_output_muted == '1' else 'volume-up'
 
+    @property
+    def client_id(self) -> str:
+        """
+        Return the client id
+        :return: The client id
+        """
+        return self._client_id
+
     def __repr__(self) -> str:
         return f'User[name={self.name}]'
 
@@ -95,12 +104,13 @@ class UserBuilder(object):
     """
 
     def __init__(self, idle_time: str = None, name: str = None, avatar_file_name: str = None,
-                 microphone_status: str = None, sound_status: str = None, client_info: ClientInfo = None) -> None:
+                 microphone_status: str = None, sound_status: str = None, client_id: str = None, client_info: ClientInfo = None) -> None:
         self._idle_time = idle_time
         self._name = name
         self._avatar_file_name = avatar_file_name
         self._microphone_status = microphone_status
         self._sound_status = sound_status
+        self._client_id = client_id
         self._client_info = client_info
 
     def idle_time(self, idle_time: str) -> 'UserBuilder':
@@ -127,6 +137,10 @@ class UserBuilder(object):
         self._client_info = client_info
         return self
 
+    def client_id(self, client_id: str) -> 'UserBuilder':
+        self._client_id = client_id
+        return self
+
     def build_as_fake_user(self) -> User:
         fake_user_client_info = copy.copy(fake_user_base_client_info)
 
@@ -146,7 +160,8 @@ def build_fake_user(idle_time: str = None,
                     name: str = None,
                     avatar_file_name: str = None,
                     microphone_status: str = None,
-                    sound_status: str = None) -> User:
+                    sound_status: str = None,
+                    client_id: str = None) -> User:
     """
     Create a faked user for displaying purposes
     :param idle_time: Formatted idle time string
@@ -154,6 +169,7 @@ def build_fake_user(idle_time: str = None,
     :param avatar_file_name: This is the client's avatar file name
     :param sound_status: Client's volume output status
     :param microphone_status: Client's microphone output status
+    :param client_id: The client id
     :return: a faked user object
     """
     if idle_time is None:
@@ -175,5 +191,5 @@ def build_fake_user(idle_time: str = None,
     # If needed, create a copy of `fake_user_base_client_info' and modify it for your purposes
     # With this approach it won't be complicated to add property based testing later on
     return UserBuilder().idle_time(idle_time).name(name).avatar_file_name(avatar_file_name).sound_status(
-        sound_status).microphone_status(microphone_status).build_as_fake_user()
+        sound_status).microphone_status(microphone_status).client_id(client_id).build_as_fake_user()
 

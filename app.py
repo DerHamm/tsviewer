@@ -4,7 +4,7 @@ import random
 import typing
 from uuid import uuid4
 
-from flask import Flask, render_template, session, redirect, url_for, request, Response
+from flask import Flask, render_template, session, redirect, url_for, request, Response, make_response
 from functools import wraps
 
 from tsviewer.channel_uploads import ChannelUploads
@@ -121,3 +121,18 @@ if __name__ in ['__main__', get_application_name()]:
         for uploaded_file in uploaded_files[0]:
             file_list.append(File(**uploaded_file))
         return render_template('files.html', files=file_list)
+
+    @app.route('/kick_from_server/<client_id>', methods=['GET'])
+    @check_password
+    def kick_from_server(client_id: str):
+        # TODO: The site should refresh after a kick or the kicked user should be removed from DOM
+        try:
+            client.connection.clientkick(reasonid=5, reasonmsg='Go away', clid=client_id)
+        except Exception as error:
+            logger.error(error)
+        response = make_response('User kicked!')
+        response.status_code = 200
+        response.headers['Content-Type'] = 'text/plain'
+        response.headers['Refresh'] = '0;url=http://127.0.0.1:5000/'
+        return response
+
