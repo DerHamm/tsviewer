@@ -178,7 +178,7 @@ class TsViewerClient(object):
         for client_id in self.get_client_id_list():
             client_info = self.get_client_info(client_id)
             avatar_file_name = self._update_avatar(client_info.client_base64HashClientUID)
-            users.append(User(client_info, avatar_file_name=avatar_file_name))
+            users.append(User(client_info, avatar_file_name=avatar_file_name, client_id=client_id))
         return users
 
     def init_file_download(self, file_name: str, channel_id: str) -> ts3.query.TS3QueryResponse:

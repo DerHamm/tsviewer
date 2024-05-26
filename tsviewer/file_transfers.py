@@ -21,6 +21,10 @@ def download_file(file_transfer_init_download_response: ts3.query.TS3QueryRespon
     :param file_name: The file name for the file that is written to the `static` folder
     :return: The file path of the created file as string or `None`
     """
+    message = file_transfer_init_download_response.parsed[0].get('msg')
+    if message:
+        logger.error(f'FTINITDOWNLOAD failed with {message}')
+        return None
     configuration = Configuration.get_instance()
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     port = int(file_transfer_init_download_response.parsed[0].get('port', 30033))

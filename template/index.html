@@ -22,6 +22,8 @@
            });
        }
     </script>
+   <script src="{{url_for('static', filename='js/app.js')}}"></script>
+
 </head>
 
 <body class="index-body">
@@ -46,6 +48,7 @@
                 <p>AFK since {{user.idle_time}}</p>
                 <sl-icon class="status-icon" name="{{user.microphone_status}}"></sl-icon>
                 <sl-icon class="status-icon" name="{{user.sound_status}}"></sl-icon>
+                <sl-icon-button name="exclamation-triangle" label="Kick from server" onclick="kickFromServer('{{user.client_id}}')" class="nav-bar-icon-button"></sl-icon-button>
             </div>
             {% if user.has_avatar %}
             <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/>
@@ -55,6 +58,12 @@
             <sl-divider></sl-divider>
         </div>
         {% endfor %}
+    </div>
+    <div class="alerts">
+        <sl-alert class="alert-success" variant="success" duration="2000" closable>
+            <sl-icon slot="icon" name="check2-circle"></sl-icon>
+            <strong>The user will now be kicked</strong>
+        </sl-alert>
     </div>
 
 </body>
