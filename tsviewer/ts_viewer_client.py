@@ -19,15 +19,14 @@ class TsViewerClient(object):
     """
     _connection: typing.Optional[ts3.query.TS3Connection]
 
-    def __init__(self, configuration: Configuration = None) -> None:
+    def __init__(self) -> None:
         """
         Connects and authorizes against the configurated Teamspeak Server.
         Exit the application if not connection could be build
-        :param configuration: Configuration File object
         """
         self._connection_retries = 0
         self._connection = None
-        self.configuration = configuration
+        self.configuration = Configuration.get_instance()
         self.channel_ids = self.get_channel_id_list()
         self.uploads = None
 

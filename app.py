@@ -55,7 +55,7 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
-    client = TsViewerClient(configuration=configuration)
+    client = TsViewerClient()
     uploads = ChannelUploads(client)
     client.uploads = uploads
     if configuration.clean_up_upload_channel:
@@ -63,8 +63,8 @@ if __name__ in ['__main__', get_application_name()]:
             uploads.clean_up()
             uploads.download_avatars_to_static_folder()
 
-
         from threading import Thread
+
         thread = Thread(target=execute_clean_up)
         logger.info('clean_up_upload_channel is set to True. The cleanup process will now be executed.')
         thread.start()
@@ -122,6 +122,7 @@ if __name__ in ['__main__', get_application_name()]:
             file_list.append(File(**uploaded_file))
         return render_template('files.html', files=file_list)
 
+
     @app.route('/kick_from_server/<client_id>', methods=['GET'])
     @check_password
     def kick_from_server(client_id: str):
@@ -133,6 +134,4 @@ if __name__ in ['__main__', get_application_name()]:
         response = make_response('User kicked!')
         response.status_code = 200
         response.headers['Content-Type'] = 'text/plain'
-        response.headers['Refresh'] = '0;url=http://127.0.0.1:5000/'
         return response
-
