@@ -11,7 +11,8 @@ from tsviewer.channel_uploads import ChannelUploads
 from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.user import build_fake_user
-from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated
+from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated, KICK_FROM_CHANNEL_IDENTIFIER, \
+    KICK_FROM_SERVER_IDENTIFIER
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 from tsviewer.ts_file import File
@@ -21,6 +22,12 @@ configuration = Configuration.get_instance()
 DISABLE_USER_PASSWORD = configuration.disable_user_password_protection
 DISABLE_ADMIN_PASSWORD = configuration.disable_admin_password_protection
 
+
+def create_successful_plain_text_response(text: str) -> Response:
+    response = make_response(text)
+    response.status_code = 200
+    response.headers['Content-Type'] = 'text/plain'
+    return response
 
 def get_user_list(ts_client: TsViewerClient) -> list[User]:
     if ts_client.connection is None or configuration.debug:
@@ -62,6 +69,7 @@ if __name__ in ['__main__', get_application_name()]:
         def execute_clean_up() -> None:
             uploads.clean_up()
             uploads.download_avatars_to_static_folder()
+
 
         from threading import Thread
 
@@ -123,15 +131,49 @@ if __name__ in ['__main__', get_application_name()]:
         return render_template('files.html', files=file_list)
 
 
-    @app.route('/kick_from_server/<client_id>', methods=['GET'])
+    @app.route('/kick_from_server/<client_id>/<reason>', methods=['GET'])
     @check_password
-    def kick_from_server(client_id: str):
+    def kick_from_server(client_id: str, reason: str = 'Go away'):
         # TODO: The site should refresh after a kick or the kicked user should be removed from DOM
+        # TODO: Exceptions should be handled in client and not in routing
         try:
-            client.connection.clientkick(reasonid=5, reasonmsg='Go away', clid=client_id)
+            client.connection.clientkick(reasonid=KICK_FROM_SERVER_IDENTIFIER, reasonmsg=reason, clid=client_id)
         except Exception as error:
             logger.error(error)
-        response = make_response('User kicked!')
-        response.status_code = 200
-        response.headers['Content-Type'] = 'text/plain'
-        return response
+        return create_successful_plain_text_response('User kicked from server')
+
+
+    @app.route('/kick_from_channel/<client_id>/<reason>', methods=['GET'])
+    @check_password
+    def kick_from_channel(client_id: str, reason: str = 'Go away'):
+        try:
+            client.connection.clientkick(reasonid=KICK_FROM_CHANNEL_IDENTIFIER, reasonmsg=reason, clid=client_id)
+        except Exception as error:
+            logger.error(error)
+        return create_successful_plain_text_response('User kicked from channel')
+
+    @app.route('/poke/<client_id>/<message>')
+    @check_password
+    def poke(client_id: str, message: str = None):
+        client.poke_client(message, client_id)
+        return create_successful_plain_text_response('User poked')
+
+    @app.route('/send_message_to_server/<message>')
+    @check_password
+    def send_message_to_server(message: str):
+        client.send_message_to_server(message)
+        return create_successful_plain_text_response('Message sent to server')
+
+    @app.route('/send_message_to_client/<client_id>/<message>')
+    @check_password
+    def send_message_to_client(client_id: str, message: str):
+        client.send_message_to_client(message, client_id)
+        return create_successful_plain_text_response('Message sent to client')
+
+    @app.route('/send_message_to_channel/<channel_id>/<message>')
+    @check_password
+    def send_message_to_channel(channel_id: str, message: str):
+        client.send_message_to_channel(channel_id, message)
+        return create_successful_plain_text_response('Message sent to channel')
+
+

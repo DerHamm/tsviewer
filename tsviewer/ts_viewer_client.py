@@ -272,12 +272,14 @@ class TsViewerClient(object):
         """
         self.connection.sendtextmessage(targetmode="3", msg=message, target='')
 
-    def poke_client(self, message: str, client_id: str) -> None:
+    def poke_client(self, message: typing.Optional[str], client_id: str) -> None:
         """
         Poke a client with the specified message
         :param message: The message to be sent
         :param client_id: The target client id
         """
+        if message is None:
+            message = ''
         self.connection.clientpoke(msg=message, clid=client_id)
 
     def _update_avatar(self, client_base64_hash_uid: str) -> typing.Optional[str]:
