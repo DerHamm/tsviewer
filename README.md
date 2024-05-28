@@ -5,10 +5,12 @@ protocol. The web application is built using Python with Flask as the web server
 
 ## Features
 
-- **Display Information**: View details about clients connected to the Teamspeak server.
+- **Client Information**: View details about clients connected to the Teamspeak server.
+- **File Information**: Configure a designated upload channel, that aggregates all files from other channels
+ and manage them.
+- **Query Commands**: Issue Teamspeak Server Query commands
 - **Customizable Configuration**: Easily configure server credentials and other settings using a JSON file.
-- **Planned Features**: Implementing user interfaces to also issue Server Query commands, a File-Upload manager and an
-easy-to-setup `Docker` image.
+- **Planned Features**: An easy-to-setup `Docker` image, More supported query commands and Server management Features
 
 ## Installation
 
@@ -82,4 +84,5 @@ export TSVIEWER_CONFIGURATION_SERVER_QUERY_HOST=127.0.0.1
     ```
 
 2. Access the web interface in your browser by navigating to `http://localhost:5000`.
+
 

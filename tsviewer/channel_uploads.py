@@ -51,9 +51,10 @@ class ChannelUploads(object):
         upload_channel_files = self._get_files_from_upload_channel()
         configuration = Configuration.get_instance()
         tag_list = list()
+        voice_port = str(configuration.server_voice_port)
         for file in upload_channel_files:
             tag = ChannelUploads._format_url_as_bb_code_link_for_channel_description(configuration.server_query_host,
-                                                                                     str(configuration.server_voice_port),
+                                                                                     voice_port,
                                                                                      server_uid,
                                                                                      self.upload_channel_id,
                                                                                      file['name'],
