@@ -12,7 +12,8 @@ class User(object):
     """ User is a representation of a client's information for displaying purposes.
      You have to provide a ``ClientInfo`` object to instantiate it"""
 
-    def __init__(self, client_info: ClientInfo = None, avatar_file_name: typing.Optional[str] = None, client_id: typing.Optional[str] = None) -> None:
+    def __init__(self, client_info: ClientInfo = None, avatar_file_name: typing.Optional[str] = None,
+                 client_id: typing.Optional[str] = None) -> None:
         """
         :param client_info: Instance of a ``Clientinfo`` returned by ``TsViewerClient.get_client_info()``
         """
@@ -104,7 +105,8 @@ class UserBuilder(object):
     """
 
     def __init__(self, idle_time: str = None, name: str = None, avatar_file_name: str = None,
-                 microphone_status: str = None, sound_status: str = None, client_id: str = None, client_info: ClientInfo = None) -> None:
+                 microphone_status: str = None, sound_status: str = None, client_id: str = None,
+                 client_info: ClientInfo = None) -> None:
         self._idle_time = idle_time
         self._name = name
         self._avatar_file_name = avatar_file_name
@@ -192,4 +194,3 @@ def build_fake_user(idle_time: str = None,
     # With this approach it won't be complicated to add property based testing later on
     return UserBuilder().idle_time(idle_time).name(name).avatar_file_name(avatar_file_name).sound_status(
         sound_status).microphone_status(microphone_status).client_id(client_id).build_as_fake_user()
-

@@ -1,6 +1,11 @@
 # TODOs
 
-# Frontend
+## Routing
+- Find a way to do partial updates on the index page (So users can be updated)
+- The routing concept right now abstracts weird teamspeak parameters with route names
+  (e.g. There is a parameter for CLIENTKICK, that kicks the client from the channel if a param is `4`,
+  but it kicks the client from the server when it's `5`. In the current routing, this is abstracted as two routes
+  `kick_client_from_server` and `kick_client_from_channel`). Should we keep it that way? Overthink that
 
 ## Admin Page (Requires: Login)
 - Build UI for all the troll commands
@@ -24,3 +29,5 @@
 
 ## Misc.
 - Create avatars and the log folder automatically
+- Muted Sound icon is not showing. Why?
+- Document Security Feautures in README.md

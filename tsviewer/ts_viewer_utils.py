@@ -1,9 +1,22 @@
 from pathlib import Path
 
-CLIENT_ID = 'clid'
-CHANNEL_ID = 'cid'
-CLIENT_NICKNAME = 'client_nickname'
-CHANNEL_NAME = 'channel_name'
+
+class TeamspeakCommonKeys(object):
+    CLIENT_ID = 'clid'
+    CHANNEL_ID = 'cid'
+    CLIENT_NICKNAME = 'client_nickname'
+    CHANNEL_NAME = 'channel_name'
+
+
+class KickClientIdentifiers(object):
+    FROM_CHANNEL = 4
+    FROM_SERVER = 5
+
+
+class SendMessageIdentifiers(object):
+    TO_CLIENT: str = '1'
+    TO_CHANNEL: str = '2'
+    TO_SERVER: str = '3'
 
 
 class TimeUtil(object):

@@ -7,7 +7,7 @@ from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
 from tsviewer.logger import logger
 from tsviewer.user import User
-from tsviewer.ts_viewer_utils import CLIENT_ID, CHANNEL_ID, CLIENT_NICKNAME, CHANNEL_NAME, display_error, \
+from tsviewer.ts_viewer_utils import TeamspeakCommonKeys, SendMessageIdentifiers, display_error, \
     resolve_with_project_path, _get_possible_file_names
 
 
@@ -19,15 +19,14 @@ class TsViewerClient(object):
     """
     _connection: typing.Optional[ts3.query.TS3Connection]
 
-    def __init__(self, configuration: Configuration = None) -> None:
+    def __init__(self) -> None:
         """
         Connects and authorizes against the configurated Teamspeak Server.
         Exit the application if not connection could be build
-        :param configuration: Configuration File object
         """
         self._connection_retries = 0
         self._connection = None
-        self.configuration = configuration
+        self.configuration = Configuration.get_instance()
         self.channel_ids = self.get_channel_id_list()
         self.uploads = None
 
@@ -36,7 +35,7 @@ class TsViewerClient(object):
         not_connected = False
         try:
             self._connection.whoami()
-        except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError) as _:
+        except (ts3.TS3Error, ts3.query.TS3QueryError, ConnectionRefusedError, AttributeError, EOFError) as _:
             logger.info('Whoami command failed')
             not_connected = True
 
@@ -133,8 +132,10 @@ class TsViewerClient(object):
         """
         clients = self.connection.clientlist()
         return list(
-            map(lambda client: client[CLIENT_ID],
-                filter(lambda client: client[CLIENT_NICKNAME] != self.configuration.server_query_user, clients)))
+            map(lambda client: client[TeamspeakCommonKeys.CLIENT_ID],
+                filter(
+                    lambda client: client[TeamspeakCommonKeys.CLIENT_NICKNAME] != self.configuration.server_query_user,
+                    clients)))
 
     def get_channel_id_list(self, filter_by: typing.Callable = None) -> list[str]:
         """
@@ -144,9 +145,10 @@ class TsViewerClient(object):
         """
         channels = self.connection.channellist()
         if filter_by is not None:
-            self.channel_ids = filter(channels, list(map(lambda channel: channel[CHANNEL_ID], channels)))
+            self.channel_ids = filter(channels,
+                                      list(map(lambda channel: channel[TeamspeakCommonKeys.CHANNEL_ID], channels)))
         else:
-            self.channel_ids = list(map(lambda channel: channel[CHANNEL_ID], channels))
+            self.channel_ids = list(map(lambda channel: channel[TeamspeakCommonKeys.CHANNEL_ID], channels))
         return self.channel_ids
 
     def get_client_id_by_nickname(self, nickname: str) -> str:
@@ -156,8 +158,9 @@ class TsViewerClient(object):
         :return: The clients ID
         """
         clients = self.connection.clientlist()
-        searched_client = next(filter(lambda client: client[CLIENT_NICKNAME] == nickname, clients), dict())
-        return searched_client.get(CLIENT_ID, str())
+        searched_client = next(filter(lambda client: client[TeamspeakCommonKeys.CLIENT_NICKNAME] == nickname, clients),
+                               dict())
+        return searched_client.get(TeamspeakCommonKeys.CLIENT_ID, str())
 
     def get_channel_id_by_name(self, name: str) -> str:
         """
@@ -166,8 +169,9 @@ class TsViewerClient(object):
         :return: The channel ID
         """
         channels = self.connection.channellist()
-        searched_channel = next(filter(lambda channel: channel[CHANNEL_NAME] == name, channels), dict())
-        return searched_channel.get(CHANNEL_ID, str())
+        searched_channel = next(filter(lambda channel: channel[TeamspeakCommonKeys.CHANNEL_NAME] == name, channels),
+                                dict())
+        return searched_channel.get(TeamspeakCommonKeys.CHANNEL_ID, str())
 
     def get_user_list(self) -> list[User]:
         """
@@ -249,7 +253,7 @@ class TsViewerClient(object):
         :param message: Message text
         :param client_id: Target client id
         """
-        self.connection.sendtextmessage(targetmode="1", target=client_id, msg=message)
+        self.connection.sendtextmessage(targetmode=SendMessageIdentifiers.TO_CLIENT, target=client_id, msg=message)
 
     def send_message_to_channel(self, message: str, channel_id: str) -> None:
         """
@@ -264,21 +268,23 @@ class TsViewerClient(object):
         self.connection.clientmove(clid=serveradmin_client_id, cid=channel_id)
 
         # Send the message (Maybe we should move back afterwards?)
-        self.connection.sendtextmessage(targetmode="2", msg=message, target='')
+        self.connection.sendtextmessage(targetmode=SendMessageIdentifiers.TO_CHANNEL, msg=message, target='')
 
     def send_message_to_server(self, message: str) -> None:
         """
         Send a message to server
         :param message: Message text
         """
-        self.connection.sendtextmessage(targetmode="3", msg=message, target='')
+        self.connection.sendtextmessage(targetmode=SendMessageIdentifiers.TO_SERVER, msg=message, target='')
 
-    def poke_client(self, message: str, client_id: str) -> None:
+    def poke_client(self, message: typing.Optional[str], client_id: str) -> None:
         """
         Poke a client with the specified message
         :param message: The message to be sent
         :param client_id: The target client id
         """
+        if message is None:
+            message = ''
         self.connection.clientpoke(msg=message, clid=client_id)
 
     def _update_avatar(self, client_base64_hash_uid: str) -> typing.Optional[str]:
