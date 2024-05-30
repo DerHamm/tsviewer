@@ -86,3 +86,16 @@ export TSVIEWER_CONFIGURATION_SERVER_QUERY_HOST=127.0.0.1
 2. Access the web interface in your browser by navigating to `http://localhost:5000`.
 
 
+## Security
+
+There are configuration options to secure the TsViewer with a password. There are two roles: `Admin` and `User`.
+Admins can issue commands and see detailed client information, while Users can't.
+
+You have to set the configuration flags `disable_user_password_protection` and or `disable_admin_password_protection` to
+`true` to activate either one or both of the roles.
+
+If `disable_user_password_protection` is set to `true`, then `website_password` has to be set.
+The same goes for `disable_admin_password_protection` and `admin_password`.
+
+The TsViewer uses a signed session cookie to store the role of a client. Make sure to also set the flags
+`cookie_secret_key` and `cookie_signing_salt`, so the cookies can't be forged or messed with otherwise.

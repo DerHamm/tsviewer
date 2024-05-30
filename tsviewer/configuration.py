@@ -1,4 +1,7 @@
+from typing import Optional
+
 from tsviewer.ts_viewer_utils import resolve_with_project_path
+from tsviewer.logger import logger
 from dataclasses import dataclass
 from json import load, dump
 import ts3.query
@@ -72,15 +75,53 @@ def read_config_path_from_environment_variables(path: str = 'config/example_conf
 _CONFIGURATION_PATH = read_config_path_from_environment_variables()
 
 
+class ConfigurationValidationResult(object):
+    def __init__(self, result: bool, abort: bool, message: Optional[str] = None) -> None:
+        self.result = result
+        self.abort = abort
+        self.message = message
+
+
+def validate_configuration(configuration: Configuration) -> ConfigurationValidationResult:
+    result = True
+    message = None
+    abort = None  # If abort is not set, result = abort
+    if not configuration.disable_user_password_protection and not configuration.website_password:
+        message = 'Admin Password protection is activated, ' \
+                  'but no password was set. Please set `admin_password` in your configuration'
+        result = False
+    elif not configuration.disable_admin_password_protection and not configuration.admin_password:
+        message = 'User Password protection is activated, ' \
+                  'but no password was set. Please set `website_password` in your configuration'
+        result = False
+    elif not configuration.cookie_secret_key:
+        message = 'No secret key is set for signing cookies. You either have to disable all password protection or ' \
+                  'set the `cookie_secret_key` field in you configuration'
+        result = False
+    elif not configuration.cookie_signing_salt:
+        message = 'No custom salt set for signing cookies. You either have to disable all password protection or ' \
+                  'set the `cookie_signing_salt` field in you configuration'
+        result = False
+    if abort is None:
+        abort = result
+    return ConfigurationValidationResult(result, abort, message=message)
+
+
 def load_configuration(path: str) -> Configuration:
     """
     Loads the `Configuration` object from the config-file. If the configuration is already loaded, that instance is
-    returned instead.
+    returned instead. `validate_configuration` is called on the loaded configuration and TsViewer aborts, if
+    the configuration turns out to be invalid
     :param path: Path to the configuration file
     :return: A `Configuration` file object
     """
     with resolve_with_project_path(path).open('r') as configuration_file:
         configuration = Configuration(**load(configuration_file))
+    validate = validate_configuration(configuration)
+    if not validate.result:
+        logger.error(validate.message)
+        if validate.abort:
+            quit()
     return configuration
 
 
