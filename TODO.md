@@ -26,8 +26,3 @@
 
 ## Talk to designer
 - ~ Jun. 15 2024
-
-## Misc.
-- Create avatars and the log folder automatically
-- Muted Sound icon is not showing. Why?
-- Document Security Feautures in README.md

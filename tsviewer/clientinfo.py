@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from json import load
-from tsviewer.ts_viewer_utils import resolve_with_project_path
+from tsviewer.path_utils import resolve_with_project_path
 
 
 @dataclass

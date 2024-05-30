@@ -7,8 +7,9 @@ from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
 from tsviewer.logger import logger
 from tsviewer.user import User
-from tsviewer.ts_viewer_utils import TeamspeakCommonKeys, SendMessageIdentifiers, display_error, \
-    resolve_with_project_path, _get_possible_file_names
+from tsviewer.ts_viewer_utils import TeamspeakCommonKeys, SendMessageIdentifiers, display_error,\
+    _get_possible_file_names
+from tsviewer.path_utils import resolve_with_project_path
 
 
 # TODO: Error handling with msg=ok and statuscode check where needed

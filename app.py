@@ -11,7 +11,8 @@ from tsviewer.channel_uploads import ChannelUploads
 from tsviewer.user import User
 from tsviewer.ts_viewer_client import TsViewerClient
 from tsviewer.user import build_fake_user
-from tsviewer.ts_viewer_utils import get_application_name, is_admin, is_authenticated, KickClientIdentifiers
+from tsviewer.ts_viewer_utils import is_admin, is_authenticated, KickClientIdentifiers
+from tsviewer.path_utils import create_directories, get_application_name
 from tsviewer.configuration import Configuration
 from tsviewer.session_interface import TsViewerSecureCookieSessionInterface
 from tsviewer.ts_file import File
@@ -62,6 +63,10 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
+    message = create_directories()
+    if message:
+        logger.warn(message)
+
     client = TsViewerClient()
     uploads = ChannelUploads(client)
     client.uploads = uploads

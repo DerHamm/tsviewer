@@ -1,7 +1,6 @@
 from typing import Optional
 
-from tsviewer.ts_viewer_utils import resolve_with_project_path
-from tsviewer.logger import logger
+from tsviewer.path_utils import resolve_with_project_path
 from dataclasses import dataclass
 from json import load, dump
 import ts3.query
@@ -119,7 +118,7 @@ def load_configuration(path: str) -> Configuration:
         configuration = Configuration(**load(configuration_file))
     validate = validate_configuration(configuration)
     if not validate.result:
-        logger.error(validate.message)
+        print(validate.message)
         if validate.abort:
             quit()
     return configuration
