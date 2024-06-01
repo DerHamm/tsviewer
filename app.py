@@ -63,9 +63,9 @@ def check_password(func) -> typing.Callable:
 
 
 if __name__ in ['__main__', get_application_name()]:
-    message = create_directories()
-    if message:
-        logger.warn(message)
+    error_message = create_directories()
+    if error_message:
+        logger.warn(error_message)
 
     client = TsViewerClient()
     uploads = ChannelUploads(client)
