@@ -26,3 +26,6 @@
 
 ## Talk to designer
 - ~ Jun. 15 2024
+
+## Refactor logging
+- Current logging is a mess in the context of imports, we have to refactor that
