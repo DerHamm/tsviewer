@@ -60,5 +60,6 @@
    "connection_bandwidth_received_last_second_total":"83",
    "connection_bandwidth_received_last_minute_total":"88",
    "connection_connected_time":"691851",
-   "connection_client_ip":"203.0.113.17"
+   "connection_client_ip":"203.0.113.17",
+   "client_unread_messages": ""
 }

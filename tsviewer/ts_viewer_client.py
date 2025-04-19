@@ -75,7 +75,11 @@ class TsViewerClient(object):
         :return: A `Clientinfo` object containing detailed information about the client
         """
         # noinspection PyProtectedMember
-        return ClientInfo(**self.connection.clientinfo(clid=clid)._parsed[0])
+        client_info: dict
+        client_info = self.connection.clientinfo(clid=clid)._parsed[0]
+        if client_info.get('client_unread_messages') is None:
+            client_info['client_unread_messages'] = str()
+        return ClientInfo(**client_info)
 
     """
     The following methods `keep_away`, `follow`, and `move_around` are all funny little utilities, that can be used

@@ -15,6 +15,12 @@ class ChannelUploads(object):
     """
 
     """
+    The maximum length for a channel description, if you try to edit the description with a larger text than this,
+    it will result in an error
+    """
+    CHANNEL_DESCRIPTION_MAX_LENGTH = 8192
+
+    """
     This is a mapping of channel IDs to whatever is returned by the `FTGETFILELIST` command 
     """
     channel_to_file_map: dict
@@ -49,10 +55,12 @@ class ChannelUploads(object):
         """
         server_uid = self.client.who_am_i()[0]['virtualserver_unique_identifier']
         upload_channel_files = self._get_files_from_upload_channel()
+        upload_channel_count = len(upload_channel_files)
         configuration = Configuration.get_instance()
         tag_list = list()
+        tag_list_length = 0
         voice_port = str(configuration.server_voice_port)
-        for file in upload_channel_files:
+        for index, file in enumerate(upload_channel_files):
             tag = ChannelUploads._format_url_as_bb_code_link_for_channel_description(configuration.server_query_host,
                                                                                      voice_port,
                                                                                      server_uid,
@@ -60,7 +68,13 @@ class ChannelUploads(object):
                                                                                      file['name'],
                                                                                      file['size'],
                                                                                      file['datetime'])
+            if (tag_list_length + len(tag) + 2) > ChannelUploads.CHANNEL_DESCRIPTION_MAX_LENGTH:
+                logger.warn(f'Upload channel description is too long to fit.' +
+                            f' Skipping {upload_channel_count - index} out of {upload_channel_count} files.')
+                break
             tag_list.append(tag)
+            tag_list_length += len(tag) + 2
+
         self.client.edit_channel_description(configuration.upload_channel_id, '\n\n'.join(tag_list))
 
     def get_files(self) -> list[list[dict[str: str]]]:
@@ -83,6 +97,7 @@ class ChannelUploads(object):
 
         self.files = files
         self.channel_to_file_map = channel_to_file_map
+
         return files
 
     def download_avatars_to_static_folder(self) -> None:
@@ -95,7 +110,7 @@ class ChannelUploads(object):
         for file in raw_files:
             if file.get('name') == 'icons':
                 continue
-            downloaded_files += self.download_avatar(file['name'])
+            downloaded_files += 1 if self.download_avatar(file['name']) else 0
 
         logger.info(f'Downloaded {downloaded_files} out of {len(raw_files) - 1} requested avatar images')
 

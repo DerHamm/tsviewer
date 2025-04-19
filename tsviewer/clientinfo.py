@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from json import load
 from tsviewer.path_utils import resolve_with_project_path
 
-
+import random
 @dataclass
 class ClientInfo:
     """
@@ -70,6 +70,7 @@ class ClientInfo:
     connection_bandwidth_received_last_minute_total: str
     connection_connected_time: str
     connection_client_ip: str
+    client_unread_messages: str
 
 
 fake_user_base_client_info: ClientInfo
