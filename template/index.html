@@ -21,50 +21,55 @@
                }
            });
        }
+
     </script>
-   <script src="{{url_for('static', filename='js/app.js')}}"></script>
+    <script src="{{url_for('static', filename='js/app.js')}}"></script>
 
 </head>
 
 <body class="index-body">
-    <div class="header">
-        <h1 class="header-text">TS-Viewer</h1>
-    </div>
-    <div class="nav">
-        <sl-icon-button name="box-arrow-left" label="Logout" onclick="logout()" class="nav-bar-icon-button"></sl-icon-button>
-        <sl-icon-button name="eyeglasses" label="Channel View" class="nav-bar-icon-button"></sl-icon-button>
-        {% if is_admin %}
-            <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
-        {% endif %}
-    </div>
+<div class="header">
+    <h1 class="header-text">TS-Viewer</h1>
+</div>
+<div class="nav">
+    <sl-icon-button name="box-arrow-left" label="Logout" onclick="logout()"
+                    class="nav-bar-icon-button"></sl-icon-button>
+    <sl-icon-button name="eyeglasses" label="Channel View" class="nav-bar-icon-button"></sl-icon-button>
+    {% if is_admin %}
+    <sl-icon-button name="gear" label="Settings" class="nav-bar-icon-button"></sl-icon-button>
+    {% endif %}
+</div>
 
-    <div class="main">
-        {% for user in users %}
-        <sl-card class="content-centered">
-            <div slot="header">
-                <p>{{user.name}}</p>
-            </div>
+<div class="main">
+    {% for user in users %}
+    <sl-card class="content-centered">
+        <div slot="header">
+            <p>{{user.name}}</p>
+        </div>
+        <div>
+            <p class="afk-text">AFK since {{user.idle_time}}</p>
             <div>
-                <p>AFK since {{user.idle_time}}</p>
                 <sl-icon class="status-icon" name="{{user.microphone_status}}"></sl-icon>
                 <sl-icon class="status-icon" name="{{user.sound_status}}"></sl-icon>
-                <sl-icon-button name="exclamation-triangle" label="Kick from server" onclick="kickFromServer('{{user.client_id}}')" class="nav-bar-icon-button"></sl-icon-button>
+                <sl-icon-button class="status-action" name="exclamation-triangle" label="Kick from server"
+                                onclick="kickFromServer('{{user.client_id}}')"></sl-icon-button>
             </div>
-            {% if user.has_avatar %}
-            <img slot="image" src="{{url_for('static', filename=user.avatar_file_name)}}"/>
-            {% endif %}
-        </sl-card>
-        <div class="content-centered">
-            <sl-divider></sl-divider>
         </div>
-        {% endfor %}
+        {% if user.has_avatar %}
+        <img slot="image" class="avatar-image" src="{{url_for('static', filename=user.avatar_file_name)}}"/>
+        {% endif %}
+    </sl-card>
+    <div class="content-centered">
+        <sl-divider></sl-divider>
     </div>
-    <div class="alerts">
-        <sl-alert class="alert-success" variant="success" duration="2000" closable>
-            <sl-icon slot="icon" name="check2-circle"></sl-icon>
-            <strong>The user will now be kicked</strong>
-        </sl-alert>
-    </div>
+    {% endfor %}
+</div>
+<div>
+    <sl-alert variant="success" duration="2000" closable>
+        <sl-icon slot="icon" name="check2-circle"></sl-icon>
+        <strong>The user will now be kicked</strong>
+    </sl-alert>
+</div>
 
 </body>
 </html>

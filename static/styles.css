@@ -31,7 +31,7 @@ body {
 
 .content-centered {
     margin: auto;
-    width: 50%;
+    width: 40%;
     display: block;
 }
 
@@ -46,6 +46,19 @@ body {
     font-size: 1.5rem;
 }
 
-.alerts {}
+.status-action {
+    color: white;
+    font-size: 1.5rem;
+}
 
-.alert-success {}
+.avatar-image {
+    width: 320px !important;
+    height: 240px !important;
+    margin: auto;
+    padding-top: 2rem;
+}
+
+
+.afk-text {
+    width: 100%;
+}

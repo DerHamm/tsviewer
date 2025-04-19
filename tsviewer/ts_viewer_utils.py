@@ -1,3 +1,11 @@
+import os
+import time
+from pathlib import Path
+from typing import Union
+
+from tsviewer.path_utils import resolve_with_project_path
+
+
 class TeamspeakCommonKeys(object):
     CLIENT_ID = 'clid'
     CHANNEL_ID = 'cid'
@@ -160,3 +168,18 @@ def __generate_dataclass(name: str, source: dict[str, str]) -> str:
     for key in source.keys():
         class_str += f'\t{key}: str\n'
     return class_str
+
+
+def was_file_edited_recently(filepath: Union[str, Path], hours=2):
+    """
+    Check if a file was modified in the last `hours` hours.
+    """
+    path = resolve_with_project_path(filepath)
+    if not os.path.isfile(path):
+        print("not found: ", filepath)
+        return False
+
+    current_time = time.time()
+    mod_time = os.path.getmtime(filepath)
+
+    return (current_time - mod_time) <= (hours * 3600)

@@ -1,3 +1,4 @@
+import time
 import typing
 
 import ts3
@@ -7,8 +8,8 @@ from tsviewer.clientinfo import ClientInfo
 from tsviewer.configuration import authorize, Configuration
 from tsviewer.logger import logger
 from tsviewer.user import User
-from tsviewer.ts_viewer_utils import TeamspeakCommonKeys, SendMessageIdentifiers, display_error,\
-    _get_possible_file_names
+from tsviewer.ts_viewer_utils import TeamspeakCommonKeys, SendMessageIdentifiers, display_error, \
+    _get_possible_file_names, was_file_edited_recently
 from tsviewer.path_utils import resolve_with_project_path
 
 
@@ -294,10 +295,19 @@ class TsViewerClient(object):
 
     def _update_avatar(self, client_base64_hash_uid: str) -> typing.Optional[str]:
         file_name = f'avatar_{client_base64_hash_uid}'
-        self.uploads.download_avatar(file_name)
+        avatar_file_name = self._handle_possible_paths(file_name)
+
+        if avatar_file_name is None or not was_file_edited_recently(
+                resolve_with_project_path(f'static/{avatar_file_name}')):
+            self.uploads.download_avatar(file_name)
+            avatar_file_name = self._handle_possible_paths(file_name)
+        return avatar_file_name
+
+    @staticmethod
+    def _handle_possible_paths(file_name: str) -> typing.Union[str, None]:
         avatar_file_name = None
         for possible_path in _get_possible_file_names(file_name):
-            absolute_path = resolve_with_project_path('static/avatars/' + possible_path)
+            absolute_path = resolve_with_project_path(f'static/avatars/{possible_path}')
             if absolute_path.is_file():
-                avatar_file_name = 'avatars/' + possible_path
+                avatar_file_name = f'avatars/{possible_path}'
         return avatar_file_name
